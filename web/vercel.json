@@ -5,7 +5,7 @@
   "framework": null,
   "build": {
     "env": {
-      "WEB_DEFAULT_API": "https://obscure-engine-5p7vj9wpr44hxj6-9000.app.github.dev"
+      "WEB_DEFAULT_API": "http://13.60.230.102:9000"
     }
   },
   "headers": [
