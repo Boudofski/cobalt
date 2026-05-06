@@ -166,7 +166,7 @@
         class:downloadable
         class:clear-visible={clearVisible}
     >
-        <OmniboxIcon loading={isLoading || isBotCheckOngoing} />
+        <OmniboxIcon loading={isLoading} />
 
         <input
             id="link-area"

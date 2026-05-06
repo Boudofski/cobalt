@@ -44,11 +44,13 @@
 </script>
 
 <svelte:head>
-    <script
-        bind:this={turnstileScript}
-        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-        defer
-    ></script>
+    {#if $cachedInfo?.info?.cobalt?.turnstileSitekey}
+        <script
+            bind:this={turnstileScript}
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+            defer
+        ></script>
+    {/if}
 </svelte:head>
 
 <div id="turnstile-container">
