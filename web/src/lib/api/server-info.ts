@@ -2,7 +2,6 @@ import { browser } from "$app/environment";
 
 import { get } from "svelte/store";
 import { currentApiURL } from "$lib/api/api-url";
-import { tryNextApi } from "$lib/api/api-fallback";
 import { turnstileCreated, turnstileEnabled, turnstileSolved } from "$lib/state/turnstile";
 import cachedInfo from "$lib/state/server-info";
 import type { CobaltServerInfoResponse, CobaltErrorResponse, CobaltServerInfo } from "$lib/types/api";
@@ -41,30 +40,21 @@ const reloadIfTurnstileDisabled = () => {
     }
 }
 
-export const getServerInfo = async (): Promise<boolean> => {
+export const getServerInfo = async () => {
     const cache = get(cachedInfo);
 
     if (cache && cache.origin === currentApiURL()) {
         reloadIfTurnstileDisabled();
-        return true;
+        return true
     }
 
     const freshInfo = await request();
 
-    // API unreachable or returned an error — try the next fallback endpoint
     if (!freshInfo || !("cobalt" in freshInfo)) {
-        if (tryNextApi()) {
-            return getServerInfo();
-        }
         return false;
     }
 
     if (!("status" in freshInfo)) {
-        // API requires Turnstile captcha — skip to next fallback endpoint
-        if (freshInfo.cobalt?.turnstileSitekey && tryNextApi()) {
-            return getServerInfo();
-        }
-
         cachedInfo.set({
             info: freshInfo,
             origin: currentApiURL(),
@@ -76,6 +66,7 @@ export const getServerInfo = async (): Promise<boolean> => {
         }
 
         reloadIfTurnstileDisabled();
+
         return true;
     }
 

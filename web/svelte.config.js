@@ -54,8 +54,8 @@ const config = {
                 "connect-src": ["*"],
                 "default-src": ["none"],
 
-                "font-src": ["self"],
-                "style-src": ["self", "unsafe-inline"],
+                "font-src": ["self", "https://fonts.gstatic.com"],
+                "style-src": ["self", "unsafe-inline", "https://fonts.googleapis.com"],
                 "img-src": ["*", "data:"],
                 "manifest-src": ["self"],
                 "worker-src": ["self"],
