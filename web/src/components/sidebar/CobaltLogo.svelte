@@ -2,8 +2,10 @@
     import IconCobalt from "$components/icons/Cobalt.svelte";
 </script>
 
-<div id="cobalt-logo">
-    <IconCobalt />
+<div id="snapsave-logo">
+    <div id="logo-icon">
+        <IconCobalt />
+    </div>
     <span id="brand-name">SnapSave</span>
 </div>
 
@@ -13,18 +15,34 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: calc(var(--sidebar-tab-padding) * 2);
-        padding-bottom: calc(var(--sidebar-tab-padding) * 2 - var(--sidebar-inner-padding));
-        gap: 6px;
+        padding: 18px 8px 12px;
+        gap: 7px;
+        flex-shrink: 0;
+    }
+
+    #logo-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    #logo-icon :global(svg) {
+        width: 36px;
+        height: 36px;
     }
 
     #brand-name {
-        font-size: 10px;
+        font-size: 9.5px;
         font-weight: 700;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
         color: var(--sidebar-highlight);
-        opacity: 0.9;
         text-transform: uppercase;
+        opacity: 0.85;
+        white-space: nowrap;
     }
 
     @media screen and (max-width: 535px) {

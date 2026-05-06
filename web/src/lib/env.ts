@@ -62,7 +62,7 @@ const docs = {
     apiLicense: "https://github.com/imputnet/cobalt/blob/main/api/LICENSE",
 };
 
-const officialApiURL = "https://obscure-engine-5p7vj9wpr44hxj6-9000.app.github.dev";
+const officialApiURL = "https://api.snapssave.com";
 
 export { donate, officialApiURL, contacts, partners, siriShortcuts, docs };
 export default variables;

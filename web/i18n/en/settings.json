@@ -131,9 +131,9 @@
     "advanced.debug.title": "enable features for nerds",
     "advanced.debug.description": "gives you easy access to app info that can be useful for debugging. enabling this does not affect functionality of SnapSave in any way.",
 
-    "processing.community": "community instances",
+    "processing.community": "custom processing servers",
     "processing.enable_custom.title": "use a custom processing server",
-    "processing.enable_custom.description": "SnapSave will use a custom processing instance if you choose to. even though SnapSave has some security measures in place, we are not responsible for any damages done via a community instance, as we have no control over them.\n\nplease be mindful of what instances you use and make sure they're hosted by people you trust.",
+    "processing.enable_custom.description": "SnapSave will use a custom processing server if you choose to. even though SnapSave has some security measures in place, we are not responsible for any damages caused by third-party servers.\n\nonly use servers hosted by people or organisations you trust.",
 
     "processing.access_key": "instance access key",
     "processing.access_key.title": "use an instance access key",

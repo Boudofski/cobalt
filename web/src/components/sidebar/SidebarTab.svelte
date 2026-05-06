@@ -57,14 +57,14 @@
         flex-direction: column;
         align-items: center;
         text-align: center;
-        gap: 3px;
-        padding: var(--sidebar-tab-padding) 3px;
+        gap: 4px;
+        padding: 9px 4px;
         color: var(--sidebar-highlight);
         font-size: var(--sidebar-font-size);
-        opacity: 0.75;
+        opacity: 0.6;
         height: fit-content;
-        border-radius: var(--border-radius);
-        transition: transform 0.2s;
+        border-radius: 10px;
+        transition: opacity 0.15s, transform 0.15s, background-color 0.15s;
 
         text-decoration: none;
         text-decoration-line: none;
@@ -75,9 +75,9 @@
     }
 
     .sidebar-tab :global(svg) {
-        stroke-width: 1.2px;
-        height: 22px;
-        width: 22px;
+        stroke-width: 1.5px;
+        height: 20px;
+        width: 20px;
     }
 
     :global([data-iphone="true"] .sidebar-tab svg) {
@@ -90,12 +90,13 @@
         opacity: 1;
         transform: none;
         transition: none;
-        animation: pressButton 0.3s;
+        animation: pressButton 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         cursor: default;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
     }
 
     .sidebar-tab:not(.active):active {
-        transform: scale(0.95);
+        transform: scale(0.92);
     }
 
     :global([data-reduce-motion="true"]) .sidebar-tab:active {
@@ -131,21 +132,13 @@
     @media (hover: hover) {
         .sidebar-tab:hover:not(.active) {
             background-color: var(--button-hover-transparent);
+            opacity: 0.85;
         }
 
         .sidebar-tab:active:not(.active),
         .sidebar-tab:focus:hover:not(.active) {
             background-color: var(--button-press-transparent);
-        }
-
-        .sidebar-tab:hover:not(.active) {
             opacity: 1;
-        }
-
-        .sidebar-tab:active:not(.active),
-        .sidebar-tab:focus:hover:not(.active) {
-            opacity: 1;
-            box-shadow: 0 0 0 1px var(--sidebar-stroke) inset;
         }
     }
 
