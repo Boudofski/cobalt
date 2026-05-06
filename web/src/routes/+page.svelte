@@ -199,6 +199,14 @@
                 <a href="/about/contact">Contact</a>
                 <a href="/about">About</a>
             </nav>
+            <nav id="footer-lp-nav" aria-label="Downloader pages">
+                <a href="/instagram-video-downloader">Instagram Video</a>
+                <a href="/instagram-reels-downloader">Instagram Reels</a>
+                <a href="/tiktok-video-downloader">TikTok Video</a>
+                <a href="/youtube-shorts-downloader">YouTube Shorts</a>
+                <a href="/facebook-video-downloader">Facebook Video</a>
+                <a href="/twitter-video-downloader">Twitter Video</a>
+            </nav>
             <p id="footer-disclaimer">
                 SnapSave is not affiliated with Instagram, TikTok, YouTube, Facebook, Meta, or any other platform. Users are responsible for respecting copyright and platform terms. Only download public videos you own or have permission to save.
             </p>
@@ -592,14 +600,14 @@
         font-weight: 400;
     }
 
-    #footer-nav {
+    #footer-nav, #footer-lp-nav {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
         gap: 4px 20px;
     }
 
-    #footer-nav a {
+    #footer-nav a, #footer-lp-nav a {
         font-size: 13px;
         color: var(--gray);
         text-decoration: none;
@@ -607,8 +615,13 @@
         transition: color 0.15s;
     }
 
-    #footer-nav a:hover {
+    #footer-nav a:hover, #footer-lp-nav a:hover {
         color: var(--secondary);
+    }
+
+    #footer-lp-nav {
+        font-size: 12px;
+        opacity: 0.7;
     }
 
     #footer-disclaimer {

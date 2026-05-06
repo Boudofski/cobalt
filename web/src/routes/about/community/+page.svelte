@@ -1,56 +1,21 @@
 <script lang="ts">
-    import locale from "$lib/i18n/locale";
-
     import { contacts } from "$lib/env";
-    import { t } from "$lib/i18n/translations";
-
-    import AboutSupport from "$components/about/AboutSupport.svelte";
-
-    let buttonContainerWidth: number;
 </script>
 
 <div id="support-page">
-    <div
-        id="support-buttons"
-        bind:offsetWidth={buttonContainerWidth}
-
-        class="two"
-        class:one={buttonContainerWidth < 500}
-    >
-        <AboutSupport
-            platform="github"
-            externalLink={contacts.github}
-        />
-
-        {#if $locale === "ru"}
-            <AboutSupport
-                platform="telegram"
-                externalLink={contacts.telegram_ru}
-            />
-        {:else}
-            <AboutSupport
-                platform="discord"
-                externalLink={contacts.discord}
-            />
-            <AboutSupport
-                platform="twitter"
-                externalLink={contacts.twitter}
-            />
-            <AboutSupport
-                platform="bluesky"
-                externalLink={contacts.bluesky}
-            />
-        {/if}
+    <div id="support-links">
+        <a class="support-link" href={contacts.github} target="_blank" rel="noopener noreferrer">
+            <span class="support-label">GitHub</span>
+            <span class="support-desc">open issues, contribute code, or follow the project</span>
+        </a>
+        <a class="support-link" href="mailto:support@snapssave.com">
+            <span class="support-label">Email</span>
+            <span class="support-desc">support@snapssave.com — for bugs, questions, or abuse reports</span>
+        </a>
     </div>
 
     <div class="subtext support-note">
-        {$t("about.support.description.issue")}
-
-        {#if $locale !== "ru"}
-            {$t("about.support.description.help")}
-        {/if}
-
-        {$t("about.support.description.best-effort")}
+        if you want to report a bug or recurring issue, open an issue on GitHub. for everything else, email us — we read every message and aim to reply within 2–3 business days.
     </div>
 </div>
 
@@ -61,19 +26,38 @@
         gap: 18px;
     }
 
-    #support-buttons {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        overflow-x: scroll;
-        gap: var(--padding);
+    #support-links {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 
-    #support-buttons.two {
-        grid-template-columns: 1fr 1fr;
+    .support-link {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 16px 20px;
+        border-radius: var(--border-radius);
+        background: var(--button);
+        border: 1px solid var(--button-stroke);
+        text-decoration: none;
+        transition: border-color 0.2s;
     }
 
-    #support-buttons.one {
-        grid-template-columns: 1fr;
+    .support-link:hover {
+        border-color: var(--blue);
+    }
+
+    .support-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--secondary);
+    }
+
+    .support-desc {
+        font-size: 12.5px;
+        color: var(--gray);
+        line-height: 1.5;
     }
 
     .support-note {

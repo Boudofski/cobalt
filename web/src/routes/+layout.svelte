@@ -37,12 +37,22 @@
     $: preloadAssets = false;
     $: plausibleLoaded = false;
 
+    const downloaderRoutes = new Set([
+        "/",
+        "/instagram-video-downloader",
+        "/instagram-reels-downloader",
+        "/tiktok-video-downloader",
+        "/youtube-shorts-downloader",
+        "/facebook-video-downloader",
+        "/twitter-video-downloader",
+    ]);
+
     afterNavigate(async () => {
         const to_focus: HTMLElement | null =
             document.querySelector("[data-first-focus]");
         to_focus?.focus();
 
-        if ($page.url.pathname === "/") {
+        if (downloaderRoutes.has($page.url.pathname)) {
             await getServerInfo();
         }
     });

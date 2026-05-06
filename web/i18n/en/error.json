@@ -1,11 +1,11 @@
 {
-    "import.no_data": "there are no settings to load from this file. are you sure it's the right one?",
-    "import.invalid": "this file doesn't have valid SnapSave settings to import. are you sure it's the right one?",
-    "import.unknown": "couldn't load data from the file. it may be corrupted or of wrong format. here's the error i got:\n\n{{ value }}",
+    "import.no_data": "no settings found in this file — double-check you picked the right one.",
+    "import.invalid": "this file doesn't contain valid SnapSave settings. please use a settings file exported from SnapSave.",
+    "import.unknown": "couldn't read this file. it may be corrupted or in the wrong format. error details:\n\n{{ value }}",
 
-    "tunnel.probe": "couldn't test this tunnel. your browser or network configuration may be blocking access to one of SnapSave servers. are you sure you don't have any weird browser extensions?",
+    "tunnel.probe": "couldn't reach the processing server. your browser or network may be blocking the connection. try disabling browser extensions or switching networks.",
 
-    "captcha_too_long": "cloudflare turnstile is taking too long to check if you're not a bot. try again, but if it takes way too long again, you can try: disabling weird browser extensions, changing networks, using a different browser, or checking your device for malware.",
+    "captcha_too_long": "the bot check is taking too long. try refreshing the page. if it keeps happening, try a different browser or network.",
 
-    "pipeline.missing_response_data": "the processing instance didn't return required file info, so i can't create a local processing pipeline for you. try again in a few seconds and report the issue if it sticks!"
+    "pipeline.missing_response_data": "the server didn't return the expected file info. please try again in a few seconds. if the problem continues, report it on GitHub."
 }
