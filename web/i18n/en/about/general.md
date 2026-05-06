@@ -1,6 +1,6 @@
 <script lang="ts">
+    import { contacts } from "$lib/env";
     import { t } from "$lib/i18n/translations";
-    import { contacts, docs } from "$lib/env";
 
     import SectionHeading from "$components/misc/SectionHeading.svelte";
 </script>
@@ -11,19 +11,9 @@
     sectionId="summary"
 />
 
-SnapSave helps you save anything from your favorite websites: video, audio, photos or gifs. just paste the link and you're ready to rock!
+SnapSave is a fast, free, and private social media video downloader.
 
-no ads, trackers, paywalls, or other nonsense. just a convenient web app that works anywhere, whenever you need it.
-</section>
-
-<section id="motivation">
-<SectionHeading
-    title={$t("about.heading.motivation")}
-    sectionId="motivation"
-/>
-
-SnapSave was created for public benefit, to protect people from ads and malware pushed by alternative downloaders.
-we believe that the best software is safe, open, and accessible. all imput project follow these basic principles.
+paste any link from Instagram, TikTok, YouTube, Facebook, Twitter/X, and dozens more — and download the media instantly. no account, no tracking, no nonsense.
 </section>
 
 <section id="privacy-efficiency">
@@ -32,19 +22,26 @@ we believe that the best software is safe, open, and accessible. all imput proje
     sectionId="privacy-efficiency"
 />
 
-all requests to the backend are anonymous and all information about potential file tunnels is encrypted.
-we have a strict zero log policy and don't store or track *anything* about individual people.
+privacy is not an afterthought at SnapSave — it's the foundation.
 
-if a request requires additional processing, such as remuxing or transcoding, SnapSave processes media
-directly on your device. this ensures best efficiency and privacy.
+all requests to our backend are anonymous. we keep no logs and store no identifying information about you or your requests.
 
-if your device doesn't support local processing, then server-based live processing is used instead.
-in this scenario, processed media is streamed directly to client, without ever being stored on server's disk.
+when a download requires server-side processing (such as merging tracks), the data is handled in encrypted memory and discarded within 90 seconds. it is never written to disk.
 
-you can [enable forced tunneling](/settings/privacy#tunnel) to boost privacy even further.
-when enabled, SnapSave will tunnel all downloaded files, not just those that require it.
-no one will know where you download something from, even your network provider.
-all they'll see is that you're using a SnapSave instance.
+if your device supports local processing, media is handled entirely on-device — nothing leaves your browser for that step.
+
+you can [enable tunneling](/settings/privacy#tunnel) in privacy settings to further anonymise your traffic.
+</section>
+
+<section id="motivation">
+<SectionHeading
+    title={$t("about.heading.motivation")}
+    sectionId="motivation"
+/>
+
+SnapSave was built to give people a safe, clean alternative to the cluttered and ad-riddled downloaders that dominate the space.
+
+we believe the best software is fast, honest, and respects its users.
 </section>
 
 <section id="community">
@@ -53,15 +50,7 @@ all they'll see is that you're using a SnapSave instance.
     sectionId="community"
 />
 
-SnapSave is used by countless artists, educators, and content creators to do what they love.
-we're always on the line with our community and work together to make SnapSave even more useful.
-feel free to [join the conversation](/about/community)!
+SnapSave is built on open-source technology. you can explore the source code and contribute [on GitHub]({contacts.github}).
 
-we believe that the future of the internet is open, which is why SnapSave is
-[source first](https://sourcefirst.com/) and [easily self-hostable]({docs.instanceHosting}).
-
-if your friend hosts a processing instance, just ask them for a domain and [add it in instance settings](/settings/instances#community).
-
-you can check the source code and contribute [on github]({contacts.github}) at any time.
-we welcome all contributions and suggestions!
+questions or feedback? reach out at [support@snapssave.com](mailto:support@snapssave.com).
 </section>

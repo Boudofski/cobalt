@@ -1,69 +1,28 @@
 <script lang="ts">
-    import { contacts, docs, partners } from "$lib/env";
+    import { contacts, docs } from "$lib/env";
     import { t } from "$lib/i18n/translations";
 
     import SectionHeading from "$components/misc/SectionHeading.svelte";
-    import BetaTesters from "$components/misc/BetaTesters.svelte";
 </script>
 
-<section id="imput">
+<section id="summary">
 <SectionHeading
-    title="imput"
-    sectionId="imput"
+    title="open source"
+    sectionId="summary"
 />
 
-SnapSave is made with love and care by [imput](https://imput.net/) ❤️
-
-we're a small team of two guys, but we work really hard to make great software that benefits everyone.
-if you like our work, please consider supporting it on the [donate page](/donate)!
+SnapSave is built on top of [cobalt](https://github.com/imputnet/cobalt), an excellent open-source media downloader created by the [imput](https://imput.net/) team. huge thanks to them for building a solid, privacy-first foundation.
 </section>
 
-<section id="testers">
+<section id="motivation">
 <SectionHeading
-    title={$t("about.heading.testers")}
-    sectionId="testers"
+    title="stack"
+    sectionId="motivation"
 />
 
-huge shout-out to our testers for testing updates early and making sure they're stable.
-they also helped us ship SnapSave 10!
-<BetaTesters />
+the frontend is built with [SvelteKit](https://kit.svelte.dev/) and deployed on [Vercel](https://vercel.com/).
 
-all links are external and lead to their personal websites or social media.
-</section>
-
-<section id="partners">
-<SectionHeading
-    title={$t("about.heading.partners")}
-    sectionId="partners"
-/>
-
-a portion of SnapSave's processing infrastructure
-is provided by our long-standing partner, [royalehosting.net]({partners.royalehosting})!
-</section>
-
-<section id="meowbalt">
-<SectionHeading
-    title={$t("general.meowbalt")}
-    sectionId="meowbalt"
-/>
-
-meowbalt is SnapSave's speedy mascot, a very expressive cat who loves fast internet.
-
-all amazing art of meowbalt that you see in SnapSave
-was made by [GlitchyPSI](https://glitchypsi.xyz/).
-he's also the original creator of the character.
-
-imput holds legal rights to meowbalt's character design,
-but not specific artworks that were created by GlitchyPSI.
-
-we love meowbalt, so we have to set a few rules in place to protect him:
-- you cannot use meowbalt's character design in any form that isn't fan art.
-- you cannot use meowbalt's design or artworks commercially.
-- you cannot use meowbalt's design or artworks in your own projects.
-- you cannot use or modify GlitchyPSI's artworks of meowbalt in any form.
-
-if you create fan art of meowbalt, please share it in
-[our discord server](/about/community), we'd love to see it!
+local media processing uses [ffmpeg](https://ffmpeg.org/) via WebAssembly, compiled and maintained by the [libav.js](https://github.com/Yahweasel/libav.js) project.
 </section>
 
 <section id="licenses">
@@ -72,14 +31,20 @@ if you create fan art of meowbalt, please share it in
     sectionId="licenses"
 />
 
-SnapSave api (processing server) code is open source and licensed under [AGPL-3.0]({docs.apiLicense}).
+the cobalt API (processing server) is licensed under [AGPL-3.0]({docs.apiLicense}).
 
-SnapSave frontend code is [source first](https://sourcefirst.com/) and is licensed under [CC-BY-NC-SA 4.0]({docs.webLicense}).
+the cobalt frontend is licensed under [CC-BY-NC-SA 4.0]({docs.webLicense}).
 
-we had to make frontend source first to stop grifters from profiting off our work
-& from creating malicious clones that deceive people and hurt our public identity.
-other than commercial use, it follows same principles as many open source licenses.
+the full list of dependencies is available [on GitHub]({contacts.github}).
+</section>
 
-we rely on many open source libraries, but also create & distribute our own.
-you can see the full list of dependencies on [github]({contacts.github})!
+<section id="testers">
+<SectionHeading
+    title={$t("about.heading.testers")}
+    sectionId="testers"
+/>
+
+thank you to everyone who has tested SnapSave and provided feedback.
+
+want to contribute or report a bug? open an issue [on GitHub]({contacts.github}) or email [support@snapssave.com](mailto:support@snapssave.com).
 </section>

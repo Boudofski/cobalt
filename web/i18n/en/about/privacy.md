@@ -11,22 +11,11 @@
     sectionId="general"
 />
 
-SnapSave's privacy policy is simple: we don't collect or store anything about you.
-what you do is solely your business, not ours or anyone else's.
+SnapSave's privacy policy is simple: **we do not collect, store, or share any personal information about you.**
 
-these terms are applicable only when using the official SnapSave instance.
-in other cases, you may need to contact the instance hoster for accurate info.
-</section>
+what you download is your business. we have no interest in tracking you, profiling you, or selling your data to anyone.
 
-<section id="local">
-<SectionHeading
-    title={$t("about.heading.local")}
-    sectionId="local"
-/>
-
-tools that use on-device processing work offline, locally,
-and never send any processed data anywhere.
-they are explicitly marked as such whenever applicable.
+these terms apply when using the official SnapSave instance at snapssave.com.
 </section>
 
 <section id="saving">
@@ -35,33 +24,13 @@ they are explicitly marked as such whenever applicable.
     sectionId="saving"
 />
 
-when using saving functionality, SnapSave may need to proxy or remux/transcode files.
-if that's the case, then a temporary tunnel is created for this purpose
-and minimal required information about the media is stored for 90 seconds.
+when you request a download, SnapSave may need to proxy or process media files on your behalf.
 
-on an unmodified & official SnapSave instance,
-**all tunnel data is encrypted with a key that only the end user has access to**.
+if that's required, a temporary tunnel is created. this tunnel holds only the minimum information needed to complete your download — such as the media URL and format — and is **permanently deleted from server memory within 90 seconds.**
 
-encrypted tunnel data may include:
-- origin service's name.
-- original URLs for media files.
-- internal arguments needed to differentiate between types of processing.
-- minimal file metadata (generated filename, title, author, creation year, copyright info).
-- minimal information about the original request that may be used in case of an URL failure during the tunnelling process.
+we maintain a strict zero-log policy. we never write request data to disk and cannot identify individual users.
 
-this data is irreversibly purged from server's RAM after 90 seconds.
-no one has access to cached tunnel data, even instance owners,
-as long as SnapSave's source code is not modified.
-
-media data from tunnels is never stored/cached anywhere.
-everything is processed live, even during remuxing and transcoding.
-SnapSave tunnels function like an anonymous proxy.
-
-if your device supports local processing,
-then encrypted tunnel info includes way less info, because it's returned to client instead.
-
-see the [related source code on github](https://github.com/imputnet/SnapSave/tree/main/api/src/stream)
-to learn more about how it works.
+media content is never stored or cached. everything is streamed live — just like an anonymous proxy.
 </section>
 
 <section id="encryption">
@@ -70,48 +39,31 @@ to learn more about how it works.
     sectionId="encryption"
 />
 
-temporarily stored tunnel data is encrypted using the AES-256 standard.
-decryption keys are only included in the access link and never logged/cached/stored anywhere.
-only the end user has access to the link & encryption keys.
-keys are generated uniquely for each requested tunnel.
+temporarily held tunnel data is encrypted using the **AES-256** standard.
+
+decryption keys are included only in the download link and are never logged, cached, or stored anywhere else. only you have access to the link and the key. keys are generated fresh for every request.
 </section>
 
-{#if env.PLAUSIBLE_ENABLED}
-<section id="plausible">
+<section id="local">
 <SectionHeading
-    title={$t("about.heading.plausible")}
-    sectionId="plausible"
+    title={$t("about.heading.local")}
+    sectionId="local"
 />
 
-we use [plausible](https://plausible.io/) to get an approximate number
-of active SnapSave users, fully anonymously. no identifiable information about
-you or your requests is ever stored. all data is anonymized and aggregated.
-we self-host and manage the [plausible instance](https://{env.PLAUSIBLE_HOST}/) that SnapSave uses.
+some operations (such as merging video and audio tracks) can be performed entirely on your device using local processing.
 
-plausible doesn't use cookies and is fully compliant with GDPR, CCPA, and PECR.
-
-if you wish to opt out of anonymous analytics, you can do it in [privacy settings](/settings/privacy#analytics).
-if you opt out, the plausible script will not be loaded at all.
-
-[learn more about plausible's dedication to privacy](https://plausible.io/privacy-focused-web-analytics).
+when local processing is used, **no data leaves your device for that step.** you can check whether local processing is active in your settings.
 </section>
-{/if}
 
-<section id="cloudflare">
+<section id="responsibility">
 <SectionHeading
-    title={$t("about.heading.cloudflare")}
-    sectionId="cloudflare"
+    title={$t("about.heading.responsibility")}
+    sectionId="responsibility"
 />
 
-we use cloudflare services for:
-- ddos & abuse protection.
-- bot protection (cloudflare turnstile).
-- hosting & deploying the statically rendered web app (cloudflare workers).
+you are responsible for how you use SnapSave. please only download content that is publicly accessible and that you have the right to save.
 
-all of these are required to provide the best experience for everyone.
-cloudflare is the most private & reliable provider for all mentioned solutions that we know of.
+do not use SnapSave to download private, copyrighted, or restricted content without permission.
 
-cloudflare is fully compliant with GDPR and HIPAA.
-
-[learn more about cloudflare's dedication to privacy](https://www.cloudflare.com/trust-hub/privacy-and-data-protection/).
+if you have privacy or data questions, contact us at [support@snapssave.com](mailto:support@snapssave.com).
 </section>

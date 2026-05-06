@@ -4,8 +4,10 @@
     "page.community": "community & support",
 
     "page.privacy": "privacy policy",
-    "page.terms": "terms and ethics",
+    "page.terms": "terms of use",
     "page.credits": "thanks & licenses",
+    "page.dmca": "DMCA",
+    "page.contact": "contact",
 
     "heading.general": "general terms",
     "heading.licenses": "licenses",

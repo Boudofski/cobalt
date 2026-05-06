@@ -34,11 +34,11 @@
 
 <svelte:head>
     <title>
-        {homeTitle}{stringPageTitle} ~ {$t("general.cobalt")}
+        {homeTitle}{stringPageTitle} ~ SnapSave
     </title>
     <meta
         property="og:title"
-        content="{homeTitle}{stringPageTitle} ~ {$t('general.cobalt')}"
+        content="{homeTitle}{stringPageTitle} ~ SnapSave"
     />
 </svelte:head>
 

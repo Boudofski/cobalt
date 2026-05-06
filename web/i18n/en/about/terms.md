@@ -9,8 +9,8 @@
     sectionId="general"
 />
 
-these terms are applicable only when using the official SnapSave instance.
-in other cases, you may need to contact the instance hoster for accurate info.
+these terms apply to users of the official SnapSave instance at snapssave.com.
+by using SnapSave, you agree to these terms.
 </section>
 
 <section id="saving">
@@ -19,14 +19,11 @@ in other cases, you may need to contact the instance hoster for accurate info.
     sectionId="saving"
 />
 
-saving functionality simplifies downloading content from the internet
-and we take zero liability for what the saved content is used for.
+SnapSave is a tool designed to help you save publicly accessible media from supported platforms.
 
-processing servers operate like advanced proxies and don't ever write any requested content to disk.
-everything is handled in RAM and permanently purged once the tunnel is completed.
-we have no downloading logs and cannot identify anyone.
+**only use SnapSave to download content that is publicly available and that you have permission to save.** do not use it to download private, paywalled, or otherwise restricted content.
 
-you can learn more about how tunnels work in [privacy policy](/about/privacy).
+SnapSave's processing servers act as anonymous proxies. no content is stored on our servers — everything is processed in memory and discarded once the download is complete. we take zero liability for what the saved content is used for.
 </section>
 
 <section id="responsibility">
@@ -35,13 +32,18 @@ you can learn more about how tunnels work in [privacy policy](/about/privacy).
     sectionId="responsibility"
 />
 
-you (end user) are responsible for what you do with our tools, how you use and distribute resulting content.
-please be mindful when using content of others and always credit original creators.
-make sure you don't violate any terms or licenses.
+you (the end user) are solely responsible for:
 
-when used in educational purposes, always cite sources and credit original creators.
+- what you download and how you use it.
+- ensuring you have the right to download the content.
+- complying with the terms of service of the source platform.
+- complying with applicable copyright law in your country.
 
-fair use and credits benefit everyone.
+do not re-distribute, re-upload, sell, or monetise content that belongs to other creators without their explicit permission.
+
+when using content for educational purposes, always cite sources and credit original creators.
+
+**fair use and proper attribution benefit everyone.**
 </section>
 
 <section id="abuse">
@@ -50,10 +52,9 @@ fair use and credits benefit everyone.
     sectionId="abuse"
 />
 
-we have no way of detecting abusive behavior automatically because SnapSave is fully anonymous.
-however, you can report such activities to us via email and we'll do our best to comply manually: abuse[at]imput.net
+SnapSave is a privacy-first tool — we have no logging and cannot automatically detect abuse.
 
-**this email is not intended for user support, you will not get a response if your concern is not related to abuse.**
+however, you may report concerns (including DMCA takedown requests and abuse reports) by emailing us at [support@snapssave.com](mailto:support@snapssave.com).
 
-if you're experiencing issues, you can reach out for support via any preferred method on [the community page](/about/community).
+please include as much relevant detail as possible. we will respond to legitimate requests promptly.
 </section>

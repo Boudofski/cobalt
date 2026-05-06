@@ -195,11 +195,12 @@
                 <a href="/">Home</a>
                 <a href="/about/privacy">Privacy Policy</a>
                 <a href="/about/terms">Terms of Use</a>
+                <a href="/about/dmca">DMCA</a>
+                <a href="/about/contact">Contact</a>
                 <a href="/about">About</a>
             </nav>
             <p id="footer-disclaimer">
-                SnapSave is not affiliated with Instagram, TikTok, YouTube, or any other platform.
-                Users are solely responsible for how downloaded content is used.
+                SnapSave is not affiliated with Instagram, TikTok, YouTube, Facebook, Meta, or any other platform. Users are responsible for respecting copyright and platform terms. Only download public videos you own or have permission to save.
             </p>
             <p id="footer-copy">© {new Date().getFullYear()} SnapSave. All rights reserved.</p>
         </div>

@@ -11,6 +11,8 @@
     import IconChecklist from "@tabler/icons-svelte/IconChecklist.svelte";
     import IconUsersGroup from "@tabler/icons-svelte/IconUsersGroup.svelte";
     import IconHeartHandshake from "@tabler/icons-svelte/IconHeartHandshake.svelte";
+    import IconScale from "@tabler/icons-svelte/IconScale.svelte";
+    import IconMail from "@tabler/icons-svelte/IconMail.svelte";
 </script>
 
 <PageNav
@@ -54,6 +56,18 @@
                 title={$t("about.page.credits")}
                 icon={IconHeartHandshake}
                 iconColor="magenta"
+            />
+            <PageNavTab
+                path="/about/dmca"
+                title={$t("about.page.dmca")}
+                icon={IconScale}
+                iconColor="red"
+            />
+            <PageNavTab
+                path="/about/contact"
+                title={$t("about.page.contact")}
+                icon={IconMail}
+                iconColor="blue"
             />
         </PageNavSection>
     </svelte:fragment>
