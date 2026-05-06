@@ -3,6 +3,11 @@
   "buildCommand": "pnpm build",
   "installCommand": "corepack enable && pnpm install",
   "framework": null,
+  "build": {
+    "env": {
+      "WEB_DEFAULT_API": "https://co.wuk.sh"
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",

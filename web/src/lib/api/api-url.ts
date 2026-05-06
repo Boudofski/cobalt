@@ -1,6 +1,6 @@
-import env from "$lib/env";
 import { get } from "svelte/store";
 import settings from "$lib/state/settings";
+import { activeApiOrigin } from "$lib/api/api-fallback";
 
 export const currentApiURL = () => {
     const processingSettings = get(settings).processing;
@@ -10,5 +10,5 @@ export const currentApiURL = () => {
         return new URL(customInstanceURL).origin;
     }
 
-    return new URL(env.DEFAULT_API!).origin;
+    return get(activeApiOrigin);
 }
