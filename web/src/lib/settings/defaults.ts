@@ -21,7 +21,7 @@ const defaultSettings: CobaltSettings = {
         dontAutoOpenQueue: false,
     },
     save: {
-        alwaysProxy: false,
+        alwaysProxy: true,
         localProcessing:
             device.supports.defaultLocalProcessing ? "preferred" : "disabled",
         audioBitrate: "128",

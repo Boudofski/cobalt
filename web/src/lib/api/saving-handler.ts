@@ -117,6 +117,8 @@ export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerAr
                 errorMsg += "\n\nYouTube may temporarily block automated downloads. Try another public video or a lower quality setting.";
             } else if (platform === 'TikTok') {
                 errorMsg += "\n\nTikTok may temporarily block this request. Try again or use another public TikTok link.";
+            } else if (platform === 'Instagram') {
+                errorMsg += "\n\nInstagram requires server-side authentication cookies to download content. Ask the server admin to add Instagram cookies to the backend config.";
             } else if (errorMsg && platform) {
                 errorMsg += "\n\nThis link may be private, unavailable, region-restricted, or temporarily blocked.";
             }
