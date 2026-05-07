@@ -218,6 +218,183 @@ This means the downloader will fail in production until you:
 
 ---
 
+## YouTube Anti-Bot Setup
+
+YouTube increasingly blocks server IPs and requires proof that requests come from a real browser.
+There are two separate fixes — **you need both for full coverage**.
+
+---
+
+### Why two fixes?
+
+The cobalt API uses different paths for different quality levels:
+
+| Quality | Client used | poToken applied? | What fixes it |
+|---------|------------|-----------------|---------------|
+| > 1080p (1440p, 4K) | WEB_EMBEDDED | Yes, when `YOUTUBE_SESSION_SERVER` is set | `bgutil-ytdlp-pot-provider` |
+| ≤ 1080p (1080p, 720p, …) | IOS | **Never** | YouTube cookies only |
+
+The "bot" error (`error.api.youtube.login`) for standard HD videos is **not fixed** by
+`YOUTUBE_SESSION_SERVER` alone. You need YouTube cookies for those quality levels.
+
+---
+
+### Fix 1 — `bgutil-ytdlp-pot-provider` (for >1080p / 4K content)
+
+This is a Node.js server that generates YouTube `poToken` + `contentBinding` by running
+YouTube's botguard JS without a real browser. Cobalt fetches tokens from it every 5 minutes.
+
+**Important:** cobalt calls `POST /get_pot` (added in commit `d8ca585`). The older
+`yt-session-generator` by imputnet uses `GET /token` and is **not compatible** with this fork.
+
+#### 1. Install system dependencies (Ubuntu)
+
+```bash
+# Node.js 20+ required
+node --version  # must be >= 20
+
+# canvas package needs these native libs
+sudo apt-get update
+sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev \
+    libjpeg-dev libgif-dev librsvg2-dev
+```
+
+#### 2. Clone and build
+
+```bash
+cd /home/ubuntu
+git clone https://github.com/Brainicism/bgutil-ytdlp-pot-provider.git
+cd bgutil-ytdlp-pot-provider/server
+npm ci
+npx tsc
+```
+
+#### 3. Test it manually
+
+```bash
+node build/main.js &
+curl -s -X POST http://127.0.0.1:4416/get_pot | head -c 200
+# Expected: {"poToken":"...","contentBinding":"...","expiresAt":"..."}
+kill %1
+```
+
+#### 4. Add to PM2
+
+Uncomment the `snapsave-pot` block in `infra/ecosystem.config.cjs`, then:
+
+```bash
+cd /home/ubuntu/cobalt
+git pull origin main
+pm2 reload infra/ecosystem.config.cjs --update-env
+pm2 save
+```
+
+#### 5. Enable in the API
+
+Uncomment `YOUTUBE_SESSION_SERVER: "http://127.0.0.1:4416"` in `ecosystem.config.cjs`, then:
+
+```bash
+pm2 reload infra/ecosystem.config.cjs --update-env
+pm2 save
+```
+
+#### 6. Verify
+
+```bash
+pm2 status
+# Both snapsave-api and snapsave-pot should show "online"
+
+pm2 logs snapsave-api --lines 50
+# Should show: [✓] poToken & visitor_data loaded successfully!
+```
+
+---
+
+### Fix 2 — YouTube Cookies (for ≤1080p / standard HD content)
+
+YouTube allows logged-in sessions without bot verification. Exporting cookies from a real
+browser session and giving them to cobalt authenticates API requests.
+
+#### 1. Export cookies from Chrome/Firefox
+
+Use the browser extension **"Get cookies.txt LOCALLY"** (Chrome) or **"cookies.txt"** (Firefox).
+
+1. Open https://www.youtube.com and sign in
+2. Click the extension icon on the YouTube tab → "Export as JSON"
+3. Save the result — you need the raw cookie string (everything after `Cookie: `)
+
+Alternatively use [EditThisCookie](https://chrome.google.com/webstore/detail/editthiscookie) and copy the cookie header value.
+
+#### 2. Create cookies.json on EC2
+
+```bash
+ssh -i /path/to/key.pem ubuntu@13.60.230.102
+
+cat > /home/ubuntu/cobalt/api/cookies.json << 'EOF'
+{
+    "youtube": [
+        "PASTE_FULL_COOKIE_STRING_HERE"
+    ]
+}
+EOF
+```
+
+The value is the raw `Cookie:` header string, e.g.:
+`"SID=abc; HSID=def; SSID=ghi; APISID=jkl; SAPISID=mno; __Secure-1PAPISID=pqr; ..."`
+
+#### 3. Enable in PM2
+
+Uncomment `COOKIE_PATH: "/home/ubuntu/cobalt/api/cookies.json"` in `ecosystem.config.cjs`, then:
+
+```bash
+pm2 reload infra/ecosystem.config.cjs --update-env
+pm2 save
+```
+
+#### 4. Verify
+
+```bash
+# Test a standard quality YouTube video
+curl -s -X POST https://api.snapssave.com \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"url":"https://www.youtube.com/watch?v=dQw4w9WgXcQ","videoQuality":"720"}'
+# Should NOT return youtube.login error
+```
+
+#### Cookie expiry
+
+YouTube cookies typically expire in 1–2 years. If downloads start failing again, re-export
+and replace the cookies.json file, then `pm2 reload infra/ecosystem.config.cjs --update-env`.
+
+---
+
+### PM2 reload sequence (after any ecosystem.config.cjs change)
+
+```bash
+cd /home/ubuntu/cobalt
+git pull origin main
+pm2 reload infra/ecosystem.config.cjs --update-env
+pm2 save
+pm2 status
+pm2 logs snapsave-api --lines 30
+```
+
+---
+
+### Remaining limitations after both fixes
+
+| Scenario | Status |
+|----------|--------|
+| Public videos ≤1080p (with cookies) | ✅ Fixed |
+| 4K/1440p downloads (with pot server) | ✅ Fixed |
+| Age-restricted videos | ❌ Not fixable — YouTube requirement |
+| Private videos | ❌ Not fixable — access is denied |
+| YouTube Shorts with deleted content | ❌ Not fixable |
+| Heavy bot-protection without cookies | ❌ Cookies required |
+
+---
+
 ## Troubleshooting
 
 **API not responding:**
