@@ -17,8 +17,14 @@ module.exports = {
             env: {
                 NODE_ENV: "production",
                 API_PORT: "9000",
-                API_URL: "http://13.60.230.102:9000",
+                API_URL: "https://api.snapssave.com",
                 CORS_WILDCARD: "1",
+
+                // Optional: YouTube bot-protection tokens.
+                // Without this, most YouTube videos still work but
+                // age-restricted / bot-protected content will fail.
+                // Set up a poToken server and uncomment:
+                // YOUTUBE_SESSION_SERVER: "http://127.0.0.1:4416",
             },
 
             error_file: "/home/ubuntu/.pm2/logs/snapsave-api-error.log",

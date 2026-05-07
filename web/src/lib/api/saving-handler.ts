@@ -105,9 +105,24 @@ export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerAr
     if (response.status === "error") {
         downloadButtonState.set("error");
 
-        return error(
-            get(t)(response.error.code, response?.error?.context)
-        );
+        const errorCode = response.error.code;
+        let errorMsg = get(t)(errorCode, response?.error?.context)
+            || get(t)("error.api.generic");
+
+        // Platform-specific hints for content/fetch failures
+        const isDownloadFailure = /\.(content\.|fetch\.)/.test(errorCode);
+        if (isDownloadFailure && selectedRequest?.url) {
+            const platform = detectPlatform(selectedRequest.url);
+            if (platform === 'YouTube') {
+                errorMsg += "\n\nYouTube may temporarily block automated downloads. Try another public video or a lower quality setting.";
+            } else if (platform === 'TikTok') {
+                errorMsg += "\n\nTikTok may temporarily block this request. Try again or use another public TikTok link.";
+            } else if (errorMsg && platform) {
+                errorMsg += "\n\nThis link may be private, unavailable, region-restricted, or temporarily blocked.";
+            }
+        }
+
+        return error(errorMsg);
     }
 
     if (response.status === "redirect") {
