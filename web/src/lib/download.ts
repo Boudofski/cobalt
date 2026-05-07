@@ -95,14 +95,19 @@ export const shareFile = async (file: File) => {
  *  1. Try blob fetch (works for CORS-enabled URLs — our tunnel API uses CORS wildcard).
  *     On iOS we hand the blob to the Web Share sheet for the best native UX.
  *     On desktop we create a blob: URL and click a download anchor.
- *  2. If CORS fails (CDN redirect URLs from Instagram, TikTok, etc.):
+ *  2. If CORS fails and openFallback is true (default for backward-compat):
  *     Fall back to a direct anchor click with target="_blank".
- *     The server's Content-Disposition: attachment header then controls whether
- *     the browser downloads or plays — most platform CDNs set it for media files.
+ *     Pass openFallback: false from dialog contexts so a failure returns 'failed'
+ *     instead of auto-opening a new tab.
  *
  * Returns 'blob' | 'anchor' | 'failed'.
  */
-export const autoDownload = async (url: string, filename?: string): Promise<'blob' | 'anchor' | 'failed'> => {
+export const autoDownload = async (
+    url: string,
+    filename?: string,
+    options?: { openFallback?: boolean }
+): Promise<'blob' | 'anchor' | 'failed'> => {
+    const { openFallback = true } = options ?? {};
     const name = guessFilename(url, filename);
 
     try {
@@ -132,6 +137,7 @@ export const autoDownload = async (url: string, filename?: string): Promise<'blo
         return 'blob';
 
     } catch {
+        if (!openFallback) return 'failed';
         // CORS blocked or network error — direct anchor click.
         // target="_blank" guards against navigating away if Content-Disposition
         // is not set on the remote URL.

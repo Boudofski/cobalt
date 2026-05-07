@@ -1,7 +1,7 @@
 <script lang="ts">
     import { t } from "$lib/i18n/translations";
     import { device } from "$lib/device";
-    import { openFile, shareFile, openURL, autoDownload } from "$lib/download";
+    import { openFile, shareFile, autoDownload } from "$lib/download";
 
     import type { CobaltFileUrlType } from "$lib/types/api";
 
@@ -50,7 +50,9 @@
         downloadError = false;
 
         if (device.is.iOS) {
-            // iOS: blob fetch → shareFile (Save to Files/Photos), fallback to Safari
+            // iOS: blob fetch → shareFile (Save to Files/Photos).
+            // Never auto-open the raw CDN URL — show the error panel instead
+            // so the user can explicitly choose to open it in Safari.
             try {
                 const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
                 if (!resp.ok) throw new Error();
@@ -59,7 +61,7 @@
                 const f = new File([blob], name, { type: blob.type || 'video/mp4' });
                 await shareFile(f).catch(() => openFile(f));
             } catch {
-                openURL(url, true);
+                downloadError = true;
             }
         } else if (urlType === 'redirect') {
             // Redirect = CDN URL from the platform (Pinterest, Instagram, etc.).
@@ -84,8 +86,10 @@
                 downloadError = true;
             }
         } else {
-            // Tunnel URL (our CORS-enabled proxy) — standard blob download
-            const result = await autoDownload(url, filename);
+            // Tunnel URL (our CORS-enabled proxy) — standard blob download.
+            // openFallback: false so a CORS failure shows the error panel
+            // instead of auto-opening a new browser tab.
+            const result = await autoDownload(url, filename, { openFallback: false });
             if (result === 'failed') downloadError = true;
         }
 
@@ -126,23 +130,23 @@
                 {downloading ? 'Preparing…' : $t('button.download')}
             </button>
 
-            {#if device.is.iOS && url}
-                <div class="ios-fallback">
-                    Can't save?
-                    <button class="ios-open" on:click={() => openURL(url, true)}>
-                        <IconExternalLink />
-                        Open in Safari
-                    </button>
-                </div>
-            {/if}
-
             {#if downloadError}
                 <div class="error-panel">
-                    <p>Automatic download isn't available for this link.</p>
+                    <p>
+                        {#if device.is.iOS}
+                            Safari blocked direct saving for this file. Tap Open manually, then use Share → Save Video.
+                        {:else}
+                            Automatic download isn't available for this link.
+                        {/if}
+                    </p>
                     {#if url}
                         <a href={url} target="_blank" rel="noopener noreferrer" class="manual-link">
                             <IconExternalLink />
-                            Open manually (right-click → Save As)
+                            {#if device.is.iOS}
+                                Open manually
+                            {:else}
+                                Open manually (right-click → Save As)
+                            {/if}
                         </a>
                     {/if}
                 </div>
@@ -265,33 +269,6 @@
         stroke-width: 2.2px;
         flex-shrink: 0;
     }
-
-    /* iOS fallback */
-    .ios-fallback {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 6px;
-        font-size: 12px;
-        color: var(--gray);
-        text-align: center;
-    }
-
-    .ios-open {
-        background: none;
-        border: none;
-        color: var(--blue);
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 0;
-    }
-
-    .ios-open :global(svg) { width: 13px; height: 13px; stroke-width: 2px; }
 
     /* Error / manual fallback */
     .error-panel {
