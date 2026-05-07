@@ -194,6 +194,12 @@ export const downloadFile = ({ url, file, urlType, filename }: DownloadFileParam
         });
     }
 
+    // iOS + URL: API calls are async and expire the user gesture before download can trigger.
+    // Show the saving dialog so the user's tap on "Download video" provides a fresh gesture.
+    if (device.is.iOS && url && !file) {
+        return openSavingDialog({ url, urlType, filename });
+    }
+
     try {
         if (file) {
             const iosFileShareSizeLimit = 1024 * 1024 * 256;

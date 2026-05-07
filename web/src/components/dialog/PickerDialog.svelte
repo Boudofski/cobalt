@@ -1,6 +1,7 @@
 <script lang="ts">
     import { device } from "$lib/device";
     import { t } from "$lib/i18n/translations";
+    import { downloadFile } from "$lib/download";
 
     import type { Optional } from "$lib/types/generic";
     import type { DialogButton } from "$lib/types/dialog";
@@ -12,6 +13,11 @@
     import DialogButtons from "$components/dialog/DialogButtons.svelte";
 
     import IconBoxMultiple from "@tabler/icons-svelte/IconBoxMultiple.svelte";
+    import IconDownload from "@tabler/icons-svelte/IconDownload.svelte";
+
+    const isTunnel = (url: string) => {
+        try { return new URL(url).pathname === '/tunnel'; } catch { return false; }
+    };
 
     export let id: string;
     export let items: Optional<DialogPickerItem[]> = undefined;
@@ -47,15 +53,32 @@
                 {$t(dialogDescription)}
             </div>
         </div>
-        <div class="picker-body">
-            {#if items}
+        {#if device.is.iOS && items}
+            <div class="ios-picker-list">
+                {#each items as item, i}
+                    {#if item?.url}
+                        <button
+                            class="ios-picker-btn button elevated"
+                            onclick={() => downloadFile({
+                                url: item.url,
+                                urlType: isTunnel(item.url) ? "tunnel" : "redirect",
+                            })}
+                        >
+                            <IconDownload />
+                            {$t(`a11y.dialog.picker.item.${item.type ?? "photo"}`)} {i + 1}
+                        </button>
+                    {/if}
+                {/each}
+            </div>
+        {:else if items}
+            <div class="picker-body">
                 {#each items as item, i}
                     {#if item?.url}
                         <PickerItem {item} number={i + 1} />
                     {/if}
                 {/each}
-            {/if}
-        </div>
+            </div>
+        {/if}
         {#if buttons}
             <DialogButtons {buttons} closeFunc={close} />
         {/if}
@@ -104,6 +127,28 @@
     .popup-description {
         font-size: 13px;
         padding: 0;
+    }
+
+    .ios-picker-list {
+        display: flex;
+        flex-direction: column;
+        gap: calc(var(--padding) / 2);
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .ios-picker-btn {
+        width: 100%;
+        justify-content: flex-start;
+        gap: calc(var(--padding) / 2);
+        font-size: 15px;
+        padding: 12px var(--padding);
+    }
+
+    .ios-picker-btn :global(svg) {
+        height: 20px;
+        width: 20px;
+        flex-shrink: 0;
     }
 
     .picker-body {

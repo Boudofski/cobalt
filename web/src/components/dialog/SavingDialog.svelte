@@ -8,6 +8,7 @@
         shareURL,
         openFile,
         shareFile,
+        openURL,
         autoDownload,
     } from "$lib/download";
 
@@ -17,7 +18,6 @@
 
     import Meowbalt from "$components/misc/Meowbalt.svelte";
     import DialogButtons from "$components/dialog/DialogButtons.svelte";
-    import SavingTutorial from "$components/dialog/SavingTutorial.svelte";
     import VerticalActionButton from "$components/buttons/VerticalActionButton.svelte";
 
     import IconShare2 from "@tabler/icons-svelte/IconShare2.svelte";
@@ -49,7 +49,22 @@
         }
         if (url) {
             downloading = true;
-            await autoDownload(url, filename);
+            if (device.is.iOS) {
+                // User tapped the button — gesture is fresh. Blob fetch + share sheet.
+                try {
+                    const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
+                    if (!resp.ok) throw new Error();
+                    const blob = await resp.blob();
+                    const name = filename ?? 'snapsave-download.mp4';
+                    const f = new File([blob], name, { type: blob.type || 'video/mp4' });
+                    await shareFile(f).catch(() => openFile(f));
+                } catch {
+                    // CORS blocked (CDN redirect URL) — open in Safari as last resort
+                    openURL(url, true);
+                }
+            } else {
+                await autoDownload(url, filename);
+            }
             downloading = false;
         }
     };
@@ -122,7 +137,7 @@
             </div>
 
             {#if device.is.iOS}
-                <SavingTutorial />
+                <p class="ios-hint">{$t("dialog.saving.ios.hint")}</p>
             {/if}
 
             {#if bodyText}
@@ -207,5 +222,13 @@
         white-space: pre-wrap;
         user-select: text;
         -webkit-user-select: text;
+    }
+
+    .ios-hint {
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 1.5;
+        color: var(--gray);
+        margin: 0;
     }
 </style>
