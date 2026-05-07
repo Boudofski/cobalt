@@ -67,13 +67,23 @@ export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerAr
 
     if (!request && !url) return;
 
+    // Pinterest CDN (v1.pinimg.com) returns no CORS headers, so redirect URLs
+    // can never be blob-downloaded by the browser. Force alwaysProxy so cobalt
+    // converts redirect → tunnel through our CORS-enabled API.
+    const inputUrl = (url || request?.url || '').toLowerCase();
+    const forcedProxy = /pinterest\.com/.test(inputUrl) ? true : getSetting("save", "alwaysProxy");
+
+    if (import.meta.env.DEV && /pinterest\.com/.test(inputUrl)) {
+        console.debug('[SnapSave] Pinterest detected — forcing alwaysProxy=true', { inputUrl, forcedProxy });
+    }
+
     const selectedRequest = request || {
         url: url!,
 
         // not lazy cuz default depends on device capabilities
         localProcessing: get(settings).save.localProcessing,
 
-        alwaysProxy: getSetting("save", "alwaysProxy"),
+        alwaysProxy: forcedProxy,
         downloadMode: getSetting("save", "downloadMode"),
 
         subtitleLang: getSetting("save", "subtitleLang"),
@@ -96,6 +106,14 @@ export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerAr
     }
 
     const response = await API.request(selectedRequest);
+
+    if (import.meta.env.DEV && /pinterest\.com/.test(inputUrl)) {
+        console.debug('[SnapSave] Pinterest API response', {
+            status: response?.status,
+            urlType: (response as Record<string, unknown>)?.urlType ?? 'n/a',
+            url: (response as Record<string, unknown>)?.url ?? 'n/a',
+        });
+    }
 
     if (!response) {
         downloadButtonState.set("error");
