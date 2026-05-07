@@ -102,7 +102,7 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        gap: 3px;
+        gap: 4px;
         max-width: calc(var(--picker-item-area) * 4);
     }
 
@@ -121,11 +121,14 @@
 
     .popup-title {
         font-size: 18px;
+        font-weight: 700;
         line-height: 1.1;
     }
 
     .popup-description {
-        font-size: 13px;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--gray);
         padding: 0;
     }
 

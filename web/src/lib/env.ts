@@ -64,5 +64,7 @@ const docs = {
 
 const officialApiURL = "https://api.snapssave.com";
 
-export { donate, officialApiURL, contacts, partners, siriShortcuts, docs };
+const iosShortcutUrl = getEnv('IOS_SHORTCUT_URL') ?? "https://snapssave.com/shortcut";
+
+export { donate, officialApiURL, contacts, partners, siriShortcuts, docs, iosShortcutUrl };
 export default variables;

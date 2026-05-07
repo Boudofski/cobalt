@@ -18,6 +18,32 @@ type SavingHandlerArgs = {
     oldTaskId?: string
 }
 
+const detectPlatform = (url: string): string => {
+    try {
+        const h = new URL(url).hostname.replace(/^www\./, '');
+        if (/instagram\.com/.test(h)) return 'Instagram';
+        if (/tiktok\.com/.test(h)) return 'TikTok';
+        if (/youtube\.com|youtu\.be/.test(h)) return 'YouTube';
+        if (/twitter\.com|x\.com/.test(h)) return 'X / Twitter';
+        if (/facebook\.com|fb\.watch/.test(h)) return 'Facebook';
+        if (/twitch\.tv/.test(h)) return 'Twitch';
+        if (/reddit\.com/.test(h)) return 'Reddit';
+        if (/vimeo\.com/.test(h)) return 'Vimeo';
+        if (/pinterest\.com/.test(h)) return 'Pinterest';
+        if (/snapchat\.com/.test(h)) return 'Snapchat';
+        if (/soundcloud\.com/.test(h)) return 'SoundCloud';
+        if (/bilibili\.com/.test(h)) return 'Bilibili';
+    } catch { /* ignore */ }
+    return '';
+};
+
+const deriveQuality = (req: CobaltSaveRequestBody): string => {
+    if (req.downloadMode === 'audio') return 'audio';
+    const q = req.videoQuality;
+    if (!q || q === 'max') return 'best';
+    return q;
+};
+
 export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerArgs) => {
     downloadButtonState.set("think");
 
@@ -87,10 +113,15 @@ export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerAr
     if (response.status === "redirect") {
         downloadButtonState.set("done");
 
-        return downloadFile({
+        return createDialog({
+            id: "saving",
+            type: "saving",
             url: response.url,
             filename: response.filename,
             urlType: "redirect",
+            platform: detectPlatform(selectedRequest.url),
+            quality: deriveQuality(selectedRequest),
+            isAudio: selectedRequest.downloadMode === 'audio',
         });
     }
 
@@ -102,9 +133,15 @@ export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerAr
         if (probeResult === 200) {
             downloadButtonState.set("done");
 
-            return downloadFile({
+            return createDialog({
+                id: "saving",
+                type: "saving",
                 url: response.url,
                 filename: response.filename,
+                urlType: "tunnel",
+                platform: detectPlatform(selectedRequest.url),
+                quality: deriveQuality(selectedRequest),
+                isAudio: selectedRequest.downloadMode === 'audio',
             });
         } else {
             downloadButtonState.set("error");
