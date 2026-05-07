@@ -1,27 +1,18 @@
 <script lang="ts">
     import { t } from "$lib/i18n/translations";
     import { device } from "$lib/device";
-    import { hapticConfirm } from "$lib/haptics";
-    import { iosShortcutUrl } from "$lib/env";
-    import {
-        copyURL,
-        shareURL,
-        openFile,
-        shareFile,
-        openURL,
-        autoDownload,
-    } from "$lib/download";
+    import { openFile, shareFile, openURL, autoDownload } from "$lib/download";
 
     import type { CobaltFileUrlType } from "$lib/types/api";
 
     import DialogContainer from "$components/dialog/DialogContainer.svelte";
     import DialogButtons from "$components/dialog/DialogButtons.svelte";
-    import CopyIcon from "$components/misc/CopyIcon.svelte";
 
     import IconDownload from "@tabler/icons-svelte/IconDownload.svelte";
-    import IconShare2 from "@tabler/icons-svelte/IconShare2.svelte";
     import IconExternalLink from "@tabler/icons-svelte/IconExternalLink.svelte";
-    import IconChevronDown from "@tabler/icons-svelte/IconChevronDown.svelte";
+    import IconVideo from "@tabler/icons-svelte/IconVideo.svelte";
+    import IconMusic from "@tabler/icons-svelte/IconMusic.svelte";
+    import IconPhoto from "@tabler/icons-svelte/IconPhoto.svelte";
 
     export let id: string;
     export let dismissable = true;
@@ -36,23 +27,35 @@
     export let isAudio: boolean = false;
 
     let close: () => void;
-    let copied = false;
     let downloading = false;
     let downloadError = false;
-    let shortcutExpanded = false;
+    let previewFailed = false;
+    let mediaLoaded = false;
 
-    $: if (copied) setTimeout(() => { copied = false; }, 1500);
+    const imageExts = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif']);
+
+    $: ext = filename?.split('.').pop()?.toLowerCase() ?? '';
+    $: mediaType = isAudio ? 'audio' : imageExts.has(ext) ? 'image' : 'video';
+
+    // Only attempt inline preview for tunnel URLs (our CORS-enabled proxy).
+    // Redirect URLs are CDN links — they lack CORS headers and will fail silently.
+    $: canPreview = Boolean(url) && (urlType === 'tunnel' || mediaType === 'audio' || mediaType === 'image');
 
     $: format = filename?.split('.').pop()?.toUpperCase() ?? '';
 
-    $: qualityDisplay = (() => {
+    $: qualityLabel = (() => {
         if (!quality) return '';
-        if (quality === 'best') return $t('dialog.saving.quality.best');
-        if (quality === 'audio') return format || 'MP3';
+        if (quality === 'best') return 'Best quality';
+        if (quality === 'audio') return format || 'Audio';
         return `${quality}p`;
     })();
 
-    $: infoChips = [qualityDisplay, (!isAudio && format) ? format : null].filter(Boolean) as string[];
+    $: typeBadge = isAudio ? 'Audio' : mediaType === 'image' ? 'Photo' : 'Video';
+
+    $: displayName = (() => {
+        if (!filename) return platform ? `${platform} download` : 'Download ready';
+        return filename.length > 44 ? filename.slice(0, 41) + '…' : filename;
+    })();
 
     const handleDownload = async () => {
         if (file) return openFile(file);
@@ -80,139 +83,131 @@
 </script>
 
 <DialogContainer {id} {dismissable} bind:close>
-    <div class="dialog-body popup-body">
-        <div class="dialog-inner-container">
+    <div class="dialog-body save-dialog">
 
-            <!-- platform + type badges -->
-            <div class="meta-row">
-                {#if platform}
-                    <span class="chip chip-platform">{platform}</span>
+        <!-- ── Preview area ── -->
+        <div class="preview-wrap" class:audio-wrap={mediaType === 'audio'}>
+            {#if canPreview && !previewFailed}
+                {#if mediaType === 'video'}
+                    <video
+                        class="preview-el"
+                        class:loaded={mediaLoaded}
+                        src={url}
+                        controls
+                        muted
+                        playsinline
+                        preload="metadata"
+                        crossorigin="anonymous"
+                        on:loadedmetadata={() => mediaLoaded = true}
+                        on:error={() => previewFailed = true}
+                    ></video>
+                    {#if !mediaLoaded}
+                        <div class="preview-placeholder" aria-hidden="true">
+                            <div class="ph-icon"><IconVideo /></div>
+                        </div>
+                    {/if}
+                {:else if mediaType === 'audio'}
+                    <div class="audio-preview">
+                        <div class="audio-icon"><IconMusic /></div>
+                        <audio
+                            class="audio-player"
+                            src={url}
+                            controls
+                            preload="metadata"
+                            crossorigin="anonymous"
+                            on:error={() => previewFailed = true}
+                        ></audio>
+                    </div>
+                {:else if mediaType === 'image'}
+                    <img
+                        class="preview-el preview-img"
+                        class:loaded={mediaLoaded}
+                        src={url}
+                        alt={filename ?? 'preview'}
+                        crossorigin="anonymous"
+                        on:load={() => mediaLoaded = true}
+                        on:error={() => previewFailed = true}
+                    />
+                    {#if !mediaLoaded}
+                        <div class="preview-placeholder" aria-hidden="true">
+                            <div class="ph-icon"><IconPhoto /></div>
+                        </div>
+                    {/if}
                 {/if}
-                <span class="chip chip-type" class:is-audio={isAudio}>
-                    {isAudio ? $t('dialog.saving.type.audio') : $t('dialog.saving.type.video')}
-                </span>
-            </div>
-
-            <!-- filename -->
-            {#if filename}
-                <p class="result-name">{filename}</p>
+            {:else}
+                <!-- Placeholder for redirect CDN URLs or failed previews -->
+                <div class="preview-placeholder">
+                    <div class="ph-icon">
+                        {#if mediaType === 'audio'}
+                            <IconMusic />
+                        {:else if mediaType === 'image'}
+                            <IconPhoto />
+                        {:else}
+                            <IconVideo />
+                        {/if}
+                    </div>
+                    <span class="ph-text">
+                        {previewFailed ? 'Preview unavailable' : 'Ready to download'}
+                    </span>
+                </div>
             {/if}
+        </div>
 
-            <!-- quality pill -->
-            {#if infoChips.length}
-                <div class="quality-pill">
-                    <span class="q-star">★</span>
-                    <span class="q-text">{infoChips.join(' · ')}</span>
+        <!-- ── Metadata ── -->
+        <div class="meta">
+            <div class="badges">
+                {#if platform}
+                    <span class="badge badge-platform">{platform}</span>
+                {/if}
+                <span class="badge badge-type" class:is-audio={isAudio}>
+                    {typeBadge}
+                </span>
+                {#if qualityLabel}
+                    <span class="badge badge-quality">{qualityLabel}</span>
+                {/if}
+            </div>
+            <p class="display-name" title={filename}>{displayName}</p>
+        </div>
+
+        <div class="sep"></div>
+
+        <!-- ── Download action ── -->
+        <div class="actions">
+            <button
+                class="btn-download"
+                class:is-loading={downloading}
+                disabled={downloading}
+                on:click={handleDownload}
+            >
+                <IconDownload />
+                {downloading ? 'Preparing…' : $t('button.download')}
+            </button>
+
+            {#if device.is.iOS && url}
+                <div class="ios-fallback">
+                    Can't save the file?
+                    <button class="ios-open" on:click={() => openURL(url, true)}>
+                        <IconExternalLink />
+                        Open in Safari
+                    </button>
                 </div>
             {/if}
 
-            <div class="sep"></div>
-
-            <!-- action area -->
-            <div class="result-actions">
-
-                {#if device.is.iOS}
-                    <p class="section-label">{$t('dialog.saving.ios.title')}</p>
-
-                    <button
-                        class="btn-primary"
-                        class:is-loading={downloading}
-                        disabled={downloading}
-                        on:click={handleDownload}
-                    >
-                        <IconDownload />
-                        {downloading ? $t('dialog.saving.preparing') : $t('dialog.saving.ios.download')}
-                    </button>
-
-                    <button class="btn-plain" on:click={() => openURL(url, true)}>
-                        <IconExternalLink />
-                        {$t('dialog.saving.ios.open')}
-                    </button>
-
-                    <button
-                        class="btn-expand"
-                        on:click={() => shortcutExpanded = !shortcutExpanded}
-                    >
-                        {$t('dialog.saving.ios.howto.toggle')}
-                        <span class="expand-icon" class:rotated={shortcutExpanded}>
-                            <IconChevronDown />
-                        </span>
-                    </button>
-
-                    {#if shortcutExpanded}
-                        <div class="shortcut-panel">
-                            <ol class="steps">
-                                <li>{$t('dialog.saving.ios.howto.1')}</li>
-                                <li>{$t('dialog.saving.ios.howto.2')}</li>
-                                <li>{$t('dialog.saving.ios.howto.3')}</li>
-                            </ol>
-                            <a
-                                href={iosShortcutUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="btn-plain shortcut-dl-link"
-                            >
-                                <IconDownload />
-                                {$t('dialog.saving.ios.shortcut.get')}
-                            </a>
-                        </div>
+            {#if downloadError}
+                <div class="error-panel">
+                    <p>Browser blocked automatic download.</p>
+                    {#if url}
+                        <a href={url} target="_blank" rel="noopener noreferrer" class="manual-link">
+                            <IconExternalLink />
+                            Open manually
+                        </a>
                     {/if}
+                </div>
+            {/if}
 
-                {:else}
-                    <!-- Desktop / Android -->
-                    {#if file || device.supports.directDownload}
-                        <button
-                            class="btn-primary"
-                            class:is-loading={downloading}
-                            disabled={downloading}
-                            on:click={handleDownload}
-                        >
-                            <IconDownload />
-                            {downloading ? $t('dialog.saving.preparing') : $t('button.download')}
-                        </button>
-                    {/if}
-
-                    <div class="btn-row">
-                        {#if device.supports.share}
-                            <button
-                                class="btn-plain"
-                                on:click={async () => {
-                                    if (file) await shareFile(file);
-                                    else if (url) await shareURL(url);
-                                }}
-                            >
-                                <IconShare2 />
-                                {$t('button.share')}
-                            </button>
-                        {/if}
-                        {#if !file}
-                            <button
-                                class="btn-plain"
-                                on:click={() => {
-                                    if (!copied) { copyURL(url); hapticConfirm(); copied = true; }
-                                }}
-                            >
-                                <CopyIcon check={copied} />
-                                {copied ? $t('button.copied') : $t('button.copy')}
-                            </button>
-                        {/if}
-                    </div>
-
-                    {#if downloadError}
-                        <div class="error-panel">
-                            <p>{$t('dialog.saving.error.blocked')}</p>
-                            <a href={url} target="_blank" rel="noopener noreferrer" class="btn-plain">
-                                {$t('dialog.saving.error.manual')}
-                            </a>
-                        </div>
-                    {/if}
-                {/if}
-
-                {#if bodyText}
-                    <p class="body-note">{bodyText}</p>
-                {/if}
-
-            </div>
+            {#if bodyText}
+                <p class="body-note">{bodyText}</p>
+            {/if}
         </div>
 
         <DialogButtons
@@ -223,261 +218,286 @@
 </DialogContainer>
 
 <style>
-    .popup-body {
-        max-width: 380px;
-        width: calc(100% - var(--padding) - var(--dialog-padding) * 2);
-        max-height: 82dvh;
+    .save-dialog {
+        width: min(380px, calc(100vw - 32px));
+        max-height: 90dvh;
         display: flex;
         flex-direction: column;
-        gap: var(--padding);
+        gap: 14px;
+        overflow: hidden;
     }
 
-    .dialog-inner-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        overflow-y: auto;
+    /* ── Preview ── */
+    .preview-wrap {
+        position: relative;
         width: 100%;
+        border-radius: 16px;
+        overflow: hidden;
+        background: var(--button-elevated);
+        aspect-ratio: 16 / 9;
+        flex-shrink: 0;
     }
 
-    /* ── badges ── */
-    .meta-row {
+    .preview-wrap.audio-wrap {
+        aspect-ratio: unset;
+        height: auto;
+        min-height: 96px;
+    }
+
+    .preview-el {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        opacity: 0;
+        transition: opacity 0.25s;
+    }
+
+    .preview-el.loaded { opacity: 1; }
+
+    .preview-img {
+        object-fit: cover;
+    }
+
+    .preview-placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        color: var(--gray);
+    }
+
+    .ph-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.45;
+    }
+
+    .ph-icon :global(svg) {
+        width: 40px;
+        height: 40px;
+        stroke-width: 1.4px;
+    }
+
+    .ph-text {
+        font-size: 12px;
+        font-weight: 500;
+        opacity: 0.7;
+        letter-spacing: 0.01em;
+    }
+
+    /* Audio-specific preview */
+    .audio-preview {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        padding: 20px 16px;
+        min-height: 96px;
+    }
+
+    .audio-icon {
+        display: flex;
+        align-items: center;
+        color: var(--blue);
+        opacity: 0.7;
+    }
+
+    .audio-icon :global(svg) {
+        width: 32px;
+        height: 32px;
+        stroke-width: 1.6px;
+    }
+
+    .audio-player {
+        width: 100%;
+        height: 36px;
+        border-radius: 8px;
+    }
+
+    /* ── Metadata ── */
+    .meta {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .badges {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: 5px;
         align-items: center;
     }
 
-    .chip {
-        font-size: 10.5px;
+    .badge {
+        font-size: 10px;
         font-weight: 700;
         letter-spacing: 0.07em;
         text-transform: uppercase;
         padding: 3px 8px;
         border-radius: 6px;
+        line-height: 1.4;
     }
 
-    .chip-platform {
+    .badge-platform {
         background: var(--blue);
         color: #fff;
     }
 
-    .chip-type {
-        background: rgba(59, 130, 246, 0.13);
+    .badge-type {
+        background: color-mix(in srgb, var(--blue) 15%, transparent);
         color: var(--blue);
     }
 
-    .chip-type.is-audio {
+    .badge-type.is-audio {
         background: rgba(124, 58, 237, 0.12);
         color: #7C3AED;
     }
 
-    /* ── filename ── */
-    .result-name {
-        margin: 0;
-        font-size: 14.5px;
-        font-weight: 600;
-        color: var(--secondary);
-        word-break: break-all;
-        line-height: 1.4;
-    }
-
-    /* ── quality pill ── */
-    .quality-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
+    .badge-quality {
         background: var(--button-elevated);
-        border-radius: 7px;
-        padding: 5px 10px;
-        align-self: flex-start;
+        color: var(--secondary);
+        font-weight: 600;
     }
 
-    .q-star { color: var(--blue); font-size: 11px; line-height: 1; }
-
-    .q-text {
-        font-size: 12px;
+    .display-name {
+        margin: 0;
+        font-size: 13.5px;
         font-weight: 600;
         color: var(--secondary);
-        letter-spacing: 0.03em;
+        line-height: 1.4;
+        word-break: break-all;
     }
 
-    /* ── separator ── */
+    /* ── Separator ── */
     .sep {
         height: 1px;
         background: var(--popup-stroke);
         flex-shrink: 0;
+        margin: 0 -2px;
     }
 
-    /* ── actions ── */
-    .result-actions {
+    /* ── Actions ── */
+    .actions {
         display: flex;
         flex-direction: column;
         gap: 8px;
     }
 
-    .section-label {
-        margin: 0;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 0.09em;
-        text-transform: uppercase;
-        color: var(--gray);
-    }
-
-    /* primary blue button */
-    .btn-primary {
+    .btn-download {
         width: 100%;
         background: var(--blue);
         color: #fff;
         border: none;
-        border-radius: 11px;
-        padding: 13px 16px;
-        font-size: 15px;
-        font-weight: 600;
+        border-radius: 13px;
+        padding: 14px 16px;
+        font-size: 15.5px;
+        font-weight: 700;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
         cursor: pointer;
+        letter-spacing: 0.01em;
         transition: opacity 0.15s, transform 0.1s;
     }
 
-    .btn-primary:hover:not(:disabled) { opacity: 0.88; }
-    .btn-primary:active:not(:disabled) { transform: scale(0.985); }
+    .btn-download:hover:not(:disabled) { opacity: 0.88; }
+    .btn-download:active:not(:disabled) { transform: scale(0.984); }
+    .btn-download:disabled,
+    .btn-download.is-loading { opacity: 0.6; cursor: wait; }
 
-    .btn-primary:disabled,
-    .btn-primary.is-loading { opacity: 0.6; cursor: wait; }
+    .btn-download :global(svg) {
+        width: 20px;
+        height: 20px;
+        stroke-width: 2.2px;
+        flex-shrink: 0;
+    }
 
-    .btn-primary :global(svg) { width: 19px; height: 19px; stroke-width: 2px; }
-
-    /* secondary elevated button */
-    .btn-plain {
-        width: 100%;
-        background: var(--button-elevated);
-        color: var(--secondary);
-        border: none;
-        border-radius: 10px;
-        padding: 11px 14px;
-        font-size: 14px;
-        font-weight: 500;
+    /* iOS fallback */
+    .ios-fallback {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 7px;
-        cursor: pointer;
-        text-decoration: none;
-        transition: background 0.12s;
+        flex-wrap: wrap;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--gray);
+        text-align: center;
+        padding: 2px 0;
     }
 
-    .btn-plain:hover { background: var(--button-elevated-hover); }
-
-    .btn-plain :global(svg) { width: 17px; height: 17px; stroke-width: 1.8px; }
-
-    /* share + copy side-by-side */
-    .btn-row {
-        display: flex;
-        gap: 8px;
-    }
-
-    .btn-row .btn-plain { flex: 1; }
-
-    /* expand toggle for shortcut guide */
-    .btn-expand {
+    .ios-open {
         background: none;
         border: none;
-        color: var(--gray);
-        font-size: 12.5px;
-        font-weight: 500;
+        color: var(--blue);
+        font-size: 12px;
+        font-weight: 600;
         cursor: pointer;
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 6px;
-        padding: 3px 0;
-        width: 100%;
+        gap: 4px;
+        padding: 0;
     }
 
-    .expand-icon {
-        display: flex;
-        align-items: center;
-        flex-shrink: 0;
-        transition: transform 0.2s;
+    .ios-open :global(svg) {
+        width: 13px;
+        height: 13px;
+        stroke-width: 2px;
     }
 
-    .expand-icon.rotated { transform: rotate(180deg); }
-
-    .expand-icon :global(svg) {
-        width: 15px;
-        height: 15px;
-        color: var(--gray);
-    }
-
-    /* collapsible shortcut panel */
-    .shortcut-panel {
-        background: var(--button-elevated);
-        border-radius: 11px;
-        padding: 14px;
-        display: flex;
-        flex-direction: column;
-        gap: 11px;
-    }
-
-    .steps {
-        margin: 0;
-        padding-left: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    .steps li {
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--secondary);
-        line-height: 1.45;
-    }
-
-    .shortcut-dl-link {
-        border-radius: 8px;
-        padding: 9px 12px;
-        font-size: 13px;
-    }
-
-    /* error panel */
+    /* Error panel */
     .error-panel {
-        background: rgba(239, 68, 68, 0.07);
-        border: 1px solid rgba(239, 68, 68, 0.18);
+        background: rgba(220, 38, 38, 0.07);
+        border: 1px solid rgba(220, 38, 38, 0.18);
         border-radius: 10px;
         padding: 12px 14px;
         display: flex;
         flex-direction: column;
         gap: 8px;
-        align-items: stretch;
     }
 
     .error-panel p {
         margin: 0;
         font-size: 13px;
         font-weight: 500;
-        color: #EF4444;
+        color: var(--red);
     }
 
-    .error-panel .btn-plain {
+    .manual-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
         font-size: 13px;
-        padding: 9px 12px;
+        font-weight: 600;
+        color: var(--secondary);
+        background: var(--button-elevated);
         border-radius: 8px;
+        padding: 8px 12px;
+        text-decoration: none;
+        transition: background 0.12s;
     }
 
-    /* body text (timeout / blocked messages) */
+    .manual-link:hover { background: var(--button-elevated-hover); }
+
+    .manual-link :global(svg) {
+        width: 14px;
+        height: 14px;
+        stroke-width: 2px;
+    }
+
+    /* Body note */
     .body-note {
-        font-size: 13px;
+        font-size: 12.5px;
         font-weight: 500;
-        line-height: 1.5;
         color: var(--gray);
+        line-height: 1.5;
         white-space: pre-wrap;
-        user-select: text;
-        -webkit-user-select: text;
         margin: 0;
     }
 </style>

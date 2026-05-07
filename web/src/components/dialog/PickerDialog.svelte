@@ -8,12 +8,13 @@
     import type { DialogPickerItem } from "$lib/types/dialog";
 
     import DialogContainer from "$components/dialog/DialogContainer.svelte";
-
     import PickerItem from "$components/dialog/PickerItem.svelte";
     import DialogButtons from "$components/dialog/DialogButtons.svelte";
 
-    import IconBoxMultiple from "@tabler/icons-svelte/IconBoxMultiple.svelte";
     import IconDownload from "@tabler/icons-svelte/IconDownload.svelte";
+    import IconPhoto from "@tabler/icons-svelte/IconPhoto.svelte";
+    import IconVideo from "@tabler/icons-svelte/IconVideo.svelte";
+    import IconGif from "@tabler/icons-svelte/IconGif.svelte";
 
     const isTunnel = (url: string) => {
         try { return new URL(url).pathname === '/tunnel'; } catch { return false; }
@@ -24,61 +25,74 @@
     export let buttons: Optional<DialogButton[]> = undefined;
     export let dismissable = true;
 
-    let dialogDescription = "dialog.picker.description.";
-
-    if (device.is.iOS) {
-        dialogDescription += "ios";
-    } else if (device.is.mobile) {
-        dialogDescription += "phone";
-    } else {
-        dialogDescription += "desktop";
-    }
-
     let close: () => void;
+
+    $: itemCount = items?.filter(i => i?.url).length ?? 0;
+    $: gridCols = itemCount <= 3 ? itemCount : 4;
 </script>
 
 <DialogContainer {id} {dismissable} bind:close>
-    <div
-        class="dialog-body picker-dialog"
-        class:three-columns={items && items.length <= 3}
-    >
-        <div class="popup-header">
-            <div class="popup-title-container">
-                <IconBoxMultiple />
-                <h2 class="popup-title" tabindex="-1">
-                    {$t("dialog.picker.title")}
-                </h2>
-            </div>
-            <div class="subtext popup-description">
-                {$t(dialogDescription)}
-            </div>
+    <div class="dialog-body picker-dialog">
+
+        <div class="picker-header">
+            <p class="picker-title">{$t("dialog.picker.title")}</p>
+            <p class="picker-desc">
+                {#if device.is.iOS}
+                    {$t("dialog.picker.description.ios")}
+                {:else if device.is.mobile}
+                    {$t("dialog.picker.description.phone")}
+                {:else}
+                    {$t("dialog.picker.description.desktop")}
+                {/if}
+            </p>
         </div>
-        {#if device.is.iOS && items}
-            <div class="ios-picker-list">
-                {#each items as item, i}
-                    {#if item?.url}
-                        <button
-                            class="ios-picker-btn button elevated"
-                            onclick={() => downloadFile({
-                                url: item.url,
-                                urlType: isTunnel(item.url) ? "tunnel" : "redirect",
-                            })}
-                        >
-                            <IconDownload />
-                            {$t(`a11y.dialog.picker.item.${item.type ?? "photo"}`)} {i + 1}
-                        </button>
-                    {/if}
-                {/each}
-            </div>
-        {:else if items}
-            <div class="picker-body">
-                {#each items as item, i}
-                    {#if item?.url}
-                        <PickerItem {item} number={i + 1} />
-                    {/if}
-                {/each}
-            </div>
+
+        {#if items && items.length > 0}
+            {#if device.is.iOS}
+                <!-- iOS: vertical download buttons -->
+                <div class="ios-list">
+                    {#each items as item, i}
+                        {#if item?.url}
+                            <button
+                                class="ios-item"
+                                onclick={() => downloadFile({
+                                    url: item.url,
+                                    urlType: isTunnel(item.url) ? "tunnel" : "redirect",
+                                })}
+                            >
+                                <span class="ios-item-icon">
+                                    {#if item.type === 'video'}
+                                        <IconVideo />
+                                    {:else if item.type === 'gif'}
+                                        <IconGif />
+                                    {:else}
+                                        <IconPhoto />
+                                    {/if}
+                                </span>
+                                <span class="ios-item-label">
+                                    {$t(`a11y.dialog.picker.item.${item.type ?? "photo"}`)}
+                                    {i + 1}
+                                </span>
+                                <span class="ios-item-dl"><IconDownload /></span>
+                            </button>
+                        {/if}
+                    {/each}
+                </div>
+            {:else}
+                <!-- Desktop/Android: thumbnail grid -->
+                <div
+                    class="picker-grid"
+                    style="--cols: {gridCols}"
+                >
+                    {#each items as item, i}
+                        {#if item?.url}
+                            <PickerItem {item} number={i + 1} />
+                        {/if}
+                    {/each}
+                </div>
+            {/if}
         {/if}
+
         {#if buttons}
             <DialogButtons {buttons} closeFunc={close} />
         {/if}
@@ -87,177 +101,140 @@
 
 <style>
     .picker-dialog {
-        --picker-item-size: 120px;
-        --picker-item-gap: 4px;
-        --picker-item-area: calc(var(--picker-item-size) + var(--picker-item-gap));
+        --item-size: 116px;
+        --item-gap: 4px;
 
-        gap: var(--padding);
-        max-height: calc(
-            90% - env(safe-area-inset-bottom) - env(safe-area-inset-top)
-        );
-        width: auto;
-    }
-
-    .popup-header {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-        max-width: calc(var(--picker-item-area) * 4);
+        gap: 14px;
+
+        max-height: calc(90dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        width: auto;
+        max-width: min(520px, calc(100vw - 32px));
     }
 
-    .popup-title-container {
+    /* ── Header ── */
+    .picker-header {
         display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: calc(var(--padding) / 2);
-        color: var(--secondary);
+        flex-direction: column;
+        gap: 3px;
     }
 
-    .popup-title-container :global(svg) {
-        height: 21px;
-        width: 21px;
-    }
-
-    .popup-title {
-        font-size: 18px;
+    .picker-title {
+        margin: 0;
+        font-size: 17px;
         font-weight: 700;
-        line-height: 1.1;
+        color: var(--secondary);
+        line-height: 1.2;
     }
 
-    .popup-description {
+    .picker-desc {
+        margin: 0;
         font-size: 12.5px;
         font-weight: 500;
         color: var(--gray);
-        padding: 0;
+        line-height: 1.4;
     }
 
-    .ios-picker-list {
-        display: flex;
-        flex-direction: column;
-        gap: calc(var(--padding) / 2);
-        width: 100%;
-        max-width: 320px;
-    }
-
-    .ios-picker-btn {
-        width: 100%;
-        justify-content: flex-start;
-        gap: calc(var(--padding) / 2);
-        font-size: 15px;
-        padding: 12px var(--padding);
-    }
-
-    .ios-picker-btn :global(svg) {
-        height: 20px;
-        width: 20px;
-        flex-shrink: 0;
-    }
-
-    .picker-body {
-        overflow-y: scroll;
+    /* ── Desktop thumbnail grid ── */
+    .picker-grid {
         display: grid;
-        justify-items: center;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        gap: var(--picker-item-gap);
-    }
-
-    .three-columns .picker-body {
-        grid-template-columns: 1fr 1fr 1fr;
-    }
-
-    .three-columns .popup-header {
-        max-width: calc(var(--picker-item-area) * 3);
+        grid-template-columns: repeat(var(--cols, 4), var(--item-size));
+        gap: var(--item-gap);
+        overflow-y: auto;
+        border-radius: 12px;
     }
 
     :global(.picker-item) {
-        width: var(--picker-item-size);
-        height: var(--picker-item-size);
+        width: var(--item-size);
+        height: var(--item-size);
     }
 
+    /* ── iOS list ── */
+    .ios-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: 100%;
+        max-width: 340px;
+        align-self: center;
+    }
+
+    .ios-item {
+        width: 100%;
+        background: var(--button-elevated);
+        border: none;
+        border-radius: 12px;
+        padding: 13px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: background 0.12s;
+        text-align: left;
+    }
+
+    .ios-item:hover { background: var(--button-elevated-hover); }
+    .ios-item:active { background: var(--button-elevated-press); }
+
+    .ios-item-icon {
+        display: flex;
+        align-items: center;
+        color: var(--gray);
+        flex-shrink: 0;
+    }
+
+    .ios-item-icon :global(svg) {
+        width: 20px;
+        height: 20px;
+        stroke-width: 1.8px;
+    }
+
+    .ios-item-label {
+        flex: 1;
+        font-size: 14.5px;
+        font-weight: 600;
+        color: var(--secondary);
+        text-transform: capitalize;
+    }
+
+    .ios-item-dl {
+        display: flex;
+        align-items: center;
+        color: var(--blue);
+        flex-shrink: 0;
+    }
+
+    .ios-item-dl :global(svg) {
+        width: 18px;
+        height: 18px;
+        stroke-width: 2px;
+    }
+
+    /* Responsive grid */
     @media screen and (max-width: 535px) {
-        .picker-body {
-            grid-template-columns: 1fr 1fr 1fr;
-        }
-
-        .popup-header {
-            max-width: calc(var(--picker-item-area) * 3);
+        .picker-dialog {
+            --item-size: 110px;
         }
     }
 
-    @media screen and (max-width: 410px) {
+    @media screen and (max-width: 420px) {
         .picker-dialog {
-            --picker-item-size: 118px;
+            --item-size: 100px;
         }
     }
 
-    @media screen and (max-width: 405px) {
+    @media screen and (max-width: 360px) {
         .picker-dialog {
-            --picker-item-size: 116px;
-        }
-    }
-
-    @media screen and (max-width: 398px) {
-        .picker-dialog {
-            --picker-item-size: 115px;
-        }
-    }
-
-    @media screen and (max-width: 388px) {
-        .picker-dialog {
-            --picker-item-size: 110px;
-        }
-    }
-
-    @media screen and (max-width: 378px) {
-        .picker-dialog {
-            --picker-item-size: 105px;
-        }
-    }
-
-    @media screen and (max-width: 365px) {
-        .picker-dialog {
-            --picker-item-size: 100px;
-        }
-    }
-
-    @media screen and (max-width: 352px) {
-        .picker-dialog {
-            --picker-item-size: 95px;
-        }
-    }
-
-    @media screen and (max-width: 334px) {
-        .picker-dialog {
-            --picker-item-size: 130px;
-        }
-
-        .picker-body,
-        .three-columns .picker-body {
-            grid-template-columns: 1fr 1fr;
+            --item-size: 90px;
+            --cols: 3 !important;
         }
     }
 
     @media screen and (max-width: 300px) {
         .picker-dialog {
-            --picker-item-size: 120px;
-        }
-    }
-
-    @media screen and (max-width: 280px) {
-        .picker-dialog {
-            --picker-item-size: 110px;
-        }
-    }
-
-    @media screen and (max-width: 255px) {
-        .picker-dialog {
-            --picker-item-size: 140px;
-        }
-
-        .picker-body,
-        .three-columns .picker-body {
-            grid-template-columns: 1fr;
+            --item-size: 120px;
+            --cols: 2 !important;
         }
     }
 </style>
