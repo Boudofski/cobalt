@@ -89,6 +89,7 @@ export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerAr
 
         return downloadFile({
             url: response.url,
+            filename: response.filename,
             urlType: "redirect",
         });
     }
@@ -103,6 +104,7 @@ export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerAr
 
             return downloadFile({
                 url: response.url,
+                filename: response.filename,
             });
         } else {
             downloadButtonState.set("error");

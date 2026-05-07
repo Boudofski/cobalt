@@ -13,6 +13,7 @@ type DownloadFileParams = {
     url?: string,
     file?: File,
     urlType?: CobaltFileUrlType,
+    filename?: string,
 }
 
 type SavingDialogParams = {
@@ -20,20 +21,56 @@ type SavingDialogParams = {
     file?: File,
     body?: string,
     urlType?: CobaltFileUrlType,
+    filename?: string,
 }
 
-const openSavingDialog = ({ url, file, body, urlType }: SavingDialogParams) => {
+const openSavingDialog = ({ url, file, body, urlType, filename }: SavingDialogParams) => {
     const dialogData: DialogInfo = {
         type: "saving",
         id: "saving",
         file,
         url,
         urlType,
+        filename,
     }
     if (body) dialogData.bodyText = body;
 
     createDialog(dialogData)
 }
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+const clickAnchor = (href: string, download: string, newTab = false) => {
+    const a = document.createElement('a');
+    a.href = href;
+    a.download = download;
+    if (newTab) {
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+    }
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+};
+
+const guessFilename = (url: string, apiFilename?: string): string => {
+    if (apiFilename) return apiFilename;
+    try {
+        const raw = new URL(url).pathname.split('/').pop() || '';
+        const seg = raw.split('?')[0];
+        const dot = seg.lastIndexOf('.');
+        if (dot !== -1) {
+            const ext = seg.slice(dot + 1).toLowerCase();
+            const audio = new Set(['mp3', 'm4a', 'ogg', 'wav', 'flac', 'opus', 'aac']);
+            const video = new Set(['mp4', 'webm', 'mov', 'avi', 'mkv', 'ts']);
+            if (audio.has(ext)) return `snapsave-audio.${ext}`;
+            if (video.has(ext)) return `snapsave-video.${ext}`;
+        }
+    } catch { /* ignore parse errors */ }
+    return 'snapsave-download.mp4';
+};
+
+// ── Public API ────────────────────────────────────────────────────────────────
 
 export const openFile = (file: File) => {
     const a = document.createElement("a");
@@ -50,6 +87,58 @@ export const shareFile = async (file: File) => {
         files: [ file ],
     });
 }
+
+/*
+ * autoDownload — preferred download trigger.
+ *
+ * Strategy:
+ *  1. Try blob fetch (works for CORS-enabled URLs — our tunnel API uses CORS wildcard).
+ *     On iOS we hand the blob to the Web Share sheet for the best native UX.
+ *     On desktop we create a blob: URL and click a download anchor.
+ *  2. If CORS fails (CDN redirect URLs from Instagram, TikTok, etc.):
+ *     Fall back to a direct anchor click with target="_blank".
+ *     The server's Content-Disposition: attachment header then controls whether
+ *     the browser downloads or plays — most platform CDNs set it for media files.
+ *
+ * Returns 'blob' | 'anchor' | 'failed'.
+ */
+export const autoDownload = async (url: string, filename?: string): Promise<'blob' | 'anchor' | 'failed'> => {
+    const name = guessFilename(url, filename);
+
+    try {
+        const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const blob = await resp.blob();
+
+        if (device.is.iOS) {
+            const file = new File([blob], name, { type: blob.type || 'video/mp4' });
+            try {
+                // Under iOS size limit for share sheet
+                if (file.size < 1024 * 1024 * 256) {
+                    await shareFile(file);
+                } else {
+                    openFile(file);
+                }
+                return 'blob';
+            } catch {
+                openFile(file);
+                return 'blob';
+            }
+        }
+
+        const blobUrl = URL.createObjectURL(blob);
+        clickAnchor(blobUrl, name);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+        return 'blob';
+
+    } catch {
+        // CORS blocked or network error — direct anchor click.
+        // target="_blank" guards against navigating away if Content-Disposition
+        // is not set on the remote URL.
+        clickAnchor(url, name, /* newTab */ true);
+        return 'anchor';
+    }
+};
 
 export const openURL = (url: string, hasDialog = false) => {
     if (!['http:', 'https:'].includes(new URL(url).protocol)) {
@@ -75,13 +164,13 @@ export const copyURL = async (url: string) => {
     return await navigator?.clipboard?.writeText(url);
 }
 
-export const downloadFile = ({ url, file, urlType }: DownloadFileParams) => {
+export const downloadFile = ({ url, file, urlType, filename }: DownloadFileParams) => {
     if (!url && !file) throw new Error("attempted to download void");
 
     const pref = get(settings).save.savingMethod;
 
     if (pref === "ask") {
-        return openSavingDialog({ url, file, urlType });
+        return openSavingDialog({ url, file, urlType, filename });
     }
 
     /*
@@ -100,18 +189,15 @@ export const downloadFile = ({ url, file, urlType }: DownloadFileParams) => {
             url,
             file,
             body: get(t)("dialog.saving.timeout"),
-            urlType
+            urlType,
+            filename,
         });
     }
 
     try {
         if (file) {
-            // 256mb cuz ram limit per tab is 384mb,
-            // and other stuff (such as libav) might have used some ram too
             const iosFileShareSizeLimit = 1024 * 1024 * 256;
 
-            // this is required because we can't share big files
-            // on ios due to a very low ram limit
             if (device.is.iOS) {
                 if (file.size < iosFileShareSizeLimit) {
                     return shareFile(file);
@@ -132,12 +218,14 @@ export const downloadFile = ({ url, file, urlType }: DownloadFileParams) => {
                 return shareURL(url);
             } else if (pref === "download" && device.supports.directDownload
                     && !(device.is.iOS && urlType === "redirect")) {
-                return openURL(url);
+                // autoDownload replaces openURL: tries blob fetch (no new tab),
+                // falls back to anchor click if CORS is blocked.
+                return autoDownload(url, filename);
             } else if (pref === "copy" && !file) {
                 return copyURL(url);
             }
         }
     } catch { /* catch & ignore */ }
 
-    return openSavingDialog({ url, file, urlType });
+    return openSavingDialog({ url, file, urlType, filename });
 }

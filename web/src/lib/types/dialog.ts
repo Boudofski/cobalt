@@ -46,6 +46,7 @@ type SavingDialog = Dialog & {
     url?: string,
     file?: File,
     urlType?: CobaltFileUrlType,
+    filename?: string,
 };
 
 export type DialogInfo = SmallDialog | PickerDialog | SavingDialog;

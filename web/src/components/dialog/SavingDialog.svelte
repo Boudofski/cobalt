@@ -5,10 +5,10 @@
     import { hapticConfirm } from "$lib/haptics";
     import {
         copyURL,
-        openURL,
         shareURL,
         openFile,
         shareFile,
+        autoDownload,
     } from "$lib/download";
 
     import type { CobaltFileUrlType } from "$lib/types/api";
@@ -33,16 +33,26 @@
     export let url: string = "";
     export let file: File | undefined = undefined;
     export let urlType: CobaltFileUrlType | undefined = undefined;
+    export let filename: string | undefined = undefined;
 
     let close: () => void;
-
     let copied = false;
+    let downloading = false;
 
     $: if (copied) {
-        setTimeout(() => {
-            copied = false;
-        }, 1500);
+        setTimeout(() => { copied = false; }, 1500);
     }
+
+    const handleDownload = async () => {
+        if (file) {
+            return openFile(file);
+        }
+        if (url) {
+            downloading = true;
+            await autoDownload(url, filename);
+            downloading = false;
+        }
+    };
 </script>
 
 <DialogContainer {id} {dismissable} bind:close>
@@ -65,16 +75,11 @@
                         id="save-download"
                         fill
                         elevated
-                        click={() => {
-                            if (file) {
-                                return openFile(file);
-                            } else if (url) {
-                                return openURL(url, true);
-                            }
-                        }}
+                        click={handleDownload}
+                        ariaLabel={downloading ? "preparing download…" : ""}
                     >
                         <IconDownload />
-                        {$t("button.download")}
+                        {downloading ? "preparing…" : $t("button.download")}
                     </VerticalActionButton>
                 {/if}
 
