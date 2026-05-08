@@ -116,19 +116,25 @@ export const autoDownload = async (
         const blob = await resp.blob();
 
         if (device.is.iOS) {
-            const file = new File([blob], name, { type: blob.type || 'video/mp4' });
-            try {
-                // Under iOS size limit for share sheet
-                if (file.size < 1024 * 1024 * 256) {
+            const mime = blob.type || 'video/mp4';
+            const file = new File([blob], name, { type: mime });
+
+            // Attempt 1: <a download> with blob URL — saves to Files in Safari iOS 13+
+            const blobUrl = URL.createObjectURL(file);
+            clickAnchor(blobUrl, name);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+
+            // Attempt 2: native share sheet (canShare guard for older iOS / non-Safari WebKit)
+            if (navigator.canShare?.({ files: [file] })) {
+                try {
                     await shareFile(file);
-                } else {
-                    openFile(file);
+                } catch (e: unknown) {
+                    // AbortError = user dismissed the sheet — not a failure
+                    if ((e as { name?: string })?.name === 'AbortError') return 'blob';
+                    // Other errors: anchor download already fired, consider it best-effort
                 }
-                return 'blob';
-            } catch {
-                openFile(file);
-                return 'blob';
             }
+            return 'blob';
         }
 
         const blobUrl = URL.createObjectURL(blob);

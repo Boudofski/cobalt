@@ -10,6 +10,7 @@
 
     import IconDownload from "@tabler/icons-svelte/IconDownload.svelte";
     import IconExternalLink from "@tabler/icons-svelte/IconExternalLink.svelte";
+    import IconShare2 from "@tabler/icons-svelte/IconShare2.svelte";
 
     export let id: string;
     export let dismissable = true;
@@ -26,6 +27,10 @@
     let close: () => void;
     let downloading = false;
     let downloadError = false;
+    // iOS two-stage state: stage 1 = anchor download attempted,
+    // stage 2 = user taps "Save / Share File" to trigger share sheet
+    let iosBlobFile: File | null = null;
+    let iosAnchorAttempted = false;
 
     $: format = filename?.split('.').pop()?.toUpperCase() ?? '';
 
@@ -43,67 +48,112 @@
         return filename.length > 44 ? filename.slice(0, 41) + '…' : filename;
     })();
 
+    // Platform-aware fallback filename — Pinterest gets a descriptive default
+    // because its CDN URLs never expose a clean filename segment.
+    $: safeFilename = filename
+        ?? (platform === 'Pinterest' ? 'snapsave-pinterest-video.mp4' : 'snapsave-download.mp4');
+
+    // ── iOS two-stage download ────────────────────────────────────────────────
+    //
+    // Stage 1 (handleDownloadIOS): fetch blob → click <a download>.
+    //   Safari iOS 13+ supports blob: URL downloads via the download attribute;
+    //   the file lands in Files / Downloads. We can't detect success, but we
+    //   surface a follow-up "Save / Share File" button for users whose download
+    //   didn't trigger (older iOS, non-Safari WebKit, large files).
+    //
+    // Stage 2 (handleIOSShare): navigator.share({ files }) — native share sheet
+    //   with "Save to Files", "Save Video", AirDrop, etc.
+    //
+    // Last resort: calm error panel with a manual "Open Video" link.
+
+    const handleDownloadIOS = async () => {
+        downloading = true;
+        downloadError = false;
+        iosAnchorAttempted = false;
+        iosBlobFile = null;
+
+        try {
+            const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const blob = await resp.blob();
+            const mime = blob.type || 'video/mp4';
+            const f = new File([blob], safeFilename, { type: mime });
+
+            // Attempt 1: <a download> with blob URL — triggers file download in Safari iOS 13+
+            const blobUrl = URL.createObjectURL(f);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = safeFilename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+
+            // Keep the file blob for the share sheet fallback (stage 2)
+            iosBlobFile = f;
+            iosAnchorAttempted = true;
+        } catch {
+            // CORS blocked or network failure — show calm fallback panel
+            downloadError = true;
+        } finally {
+            downloading = false;
+        }
+    };
+
+    // Stage 2: user-triggered share sheet with the already-fetched File object.
+    // Triggered by the "Save / Share File" button in the hint panel.
+    const handleIOSShare = async () => {
+        if (!iosBlobFile) return;
+        try {
+            if (navigator.canShare?.({ files: [iosBlobFile] })) {
+                await navigator.share({ files: [iosBlobFile], title: iosBlobFile.name });
+            } else {
+                // File sharing not supported — fall through to manual panel
+                downloadError = true;
+            }
+        } catch (e: unknown) {
+            // AbortError = user dismissed the share sheet — not an error
+            if ((e as { name?: string })?.name !== 'AbortError') {
+                downloadError = true;
+            }
+        }
+    };
+
+    // ── Main download handler ─────────────────────────────────────────────────
+
     const handleDownload = async () => {
         if (file) return openFile(file);
         if (!url) return;
+
+        // iOS always uses the two-stage blob + share path regardless of urlType.
+        // Raw link opening is the last-resort fallback only, never automatic.
+        if (device.is.iOS) return handleDownloadIOS();
+
         downloading = true;
         downloadError = false;
 
-        if (device.is.iOS) {
-            // iOS Safari: fetch blob → Web Share sheet (Save Video / Save to Files).
-            // canShare({ files }) guards against browsers where file sharing is unavailable.
-            // On failure, show the hint panel so the user can manually open the video.
+        if (urlType === 'redirect') {
+            // Redirect = CDN URL from the platform. Try blob fetch + anchor click.
+            // If CORS blocks it, show the manual panel (right-click → Save As).
+            // Never auto-open the raw CDN link — that navigates away from the app.
             try {
                 const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
-                if (!resp.ok) throw new Error();
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                 const blob = await resp.blob();
-                const name = filename ?? 'snapsave-download.mp4';
-                const f = new File([blob], name, { type: blob.type || 'video/mp4' });
-
-                if (navigator.canShare?.({ files: [f] })) {
-                    try {
-                        await navigator.share({ files: [f], title: name });
-                    } catch (shareErr: unknown) {
-                        // AbortError = user dismissed the share sheet — not an error
-                        if ((shareErr as { name?: string })?.name !== 'AbortError') {
-                            downloadError = true;
-                        }
-                    }
-                } else {
-                    // File sharing not supported — open in new tab so the user can
-                    // tap Safari's share button → Save Video
-                    window.open(url, '_blank', 'noopener,noreferrer');
-                    downloadError = true;
-                }
-            } catch {
-                downloadError = true;
-            }
-        } else if (urlType === 'redirect') {
-            // Redirect = CDN URL from the platform (Pinterest, Instagram, etc.).
-            // autoDownload's CORS fallback opens a new tab which navigates to the
-            // source content. Instead, try blob fetch ourselves; if CORS blocks it,
-            // show the manual-download panel so the user can right-click → Save As.
-            try {
-                const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
-                if (!resp.ok) throw new Error();
-                const blob = await resp.blob();
-                const name = filename ?? 'snapsave-download.mp4';
                 const blobUrl = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = blobUrl;
-                a.download = name;
+                a.download = safeFilename;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
             } catch {
-                // CORS blocked — show manual link instead of opening a new tab
                 downloadError = true;
             }
         } else {
-            // Tunnel URL (our CORS-enabled proxy) — standard blob download.
-            // openFallback: false so a CORS failure shows the error panel
-            // instead of auto-opening a new browser tab.
+            // Tunnel URL — CORS-enabled proxy. Standard blob download via autoDownload.
+            // openFallback: false so a failure shows the error panel, not a new tab.
             const result = await autoDownload(url, filename, { openFallback: false });
             if (result === 'failed') downloadError = true;
         }
@@ -142,27 +192,36 @@
                 on:click={handleDownload}
             >
                 <IconDownload />
-                {downloading ? 'Preparing…' : $t('button.download')}
+                {downloading ? 'Preparing…' : 'Download File'}
             </button>
 
+            <!-- iOS stage 1 success: offer share sheet as second save method -->
+            {#if device.is.iOS && iosAnchorAttempted && !downloadError}
+                <div class="hint-panel">
+                    <p>Your file is ready. iPhone Safari may ask you to save through the share sheet.</p>
+                    <button class="btn-share" on:click={handleIOSShare}>
+                        <IconShare2 />
+                        Save / Share File
+                    </button>
+                </div>
+            {/if}
+
+            <!-- Fallback / error panel -->
             {#if downloadError}
-                <!-- iOS: calm hint panel. Desktop: error panel. -->
                 <div class="hint-panel" class:is-error={!device.is.iOS}>
                     <p>
                         {#if device.is.iOS}
-                            iPhone Safari requires using the share sheet to save videos.
+                            This source can't be downloaded directly on iPhone Safari.
+                            Open the video, then use Share → Save to Files.
                         {:else}
                             Automatic download isn't available for this link.
+                            Try opening manually (right-click → Save As).
                         {/if}
                     </p>
                     {#if url}
                         <a href={url} target="_blank" rel="noopener noreferrer" class="manual-link">
                             <IconExternalLink />
-                            {#if device.is.iOS}
-                                Open Video
-                            {:else}
-                                Open manually (right-click → Save As)
-                            {/if}
+                            Open Video
                         </a>
                     {/if}
                 </div>
@@ -283,6 +342,33 @@
         width: 19px;
         height: 19px;
         stroke-width: 2.2px;
+        flex-shrink: 0;
+    }
+
+    /* ── iOS share sheet fallback button ── */
+    .btn-share {
+        width: 100%;
+        background: var(--button-elevated);
+        color: var(--secondary);
+        border: none;
+        border-radius: 10px;
+        padding: 11px 14px;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        cursor: pointer;
+        transition: background 0.12s;
+    }
+
+    .btn-share:hover { background: var(--button-elevated-hover); }
+
+    .btn-share :global(svg) {
+        width: 16px;
+        height: 16px;
+        stroke-width: 2px;
         flex-shrink: 0;
     }
 
