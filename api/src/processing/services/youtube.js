@@ -24,7 +24,7 @@ Platform.shim.eval = async (data) => {
 
 const PLAYER_REFRESH_PERIOD = 1000 * 60 * 15; // ms
 
-let innertube, lastRefreshedAt;
+let innertube, lastRefreshedAt, innertubeHadTokens;
 
 const codecList = {
     h264: {
@@ -68,13 +68,17 @@ const cloneInnertube = async (customFetch, useSession) => {
     const cookie = rawCookie?.toString();
 
     const sessionTokens = getYouTubeSession();
+    const hasTokens = Boolean(sessionTokens?.potoken && sessionTokens?.visitor_data);
     const retrieve_player = Boolean(sessionTokens || cookie);
 
-    if (useSession && env.ytSessionServer && !sessionTokens?.potoken) {
+    if (useSession && env.ytSessionServer && !hasTokens) {
         throw "no_session_tokens";
     }
 
-    if (!innertube || shouldRefreshPlayer) {
+    // Force recreate if token availability changed so visitor_data stays consistent
+    const tokenStateChanged = hasTokens !== innertubeHadTokens;
+
+    if (!innertube || shouldRefreshPlayer || tokenStateChanged) {
         let player_id;
         if (env.ytPlayerIds) {
             player_id = env.ytPlayerIds[
@@ -86,10 +90,11 @@ const cloneInnertube = async (customFetch, useSession) => {
             fetch: customFetch,
             retrieve_player,
             cookie,
-            po_token: useSession ? sessionTokens?.potoken : undefined,
-            visitor_data: useSession ? sessionTokens?.visitor_data : undefined,
+            po_token: hasTokens ? sessionTokens.potoken : undefined,
+            visitor_data: hasTokens ? sessionTokens.visitor_data : undefined,
             player_id,
         });
+        innertubeHadTokens = hasTokens;
         lastRefreshedAt = +new Date();
     }
 
@@ -103,7 +108,7 @@ const cloneInnertube = async (customFetch, useSession) => {
         cookie,
         customFetch ?? innertube.session.http.fetch,
         innertube.session.cache,
-        sessionTokens?.potoken
+        hasTokens ? sessionTokens.potoken : undefined,
     );
 
     const yt = new Innertube(session);
