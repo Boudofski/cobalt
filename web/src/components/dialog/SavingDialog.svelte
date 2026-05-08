@@ -1,7 +1,7 @@
 <script lang="ts">
     import { t } from "$lib/i18n/translations";
     import { device } from "$lib/device";
-    import { openFile, shareFile, autoDownload } from "$lib/download";
+    import { openFile, autoDownload } from "$lib/download";
 
     import type { CobaltFileUrlType } from "$lib/types/api";
 
@@ -50,16 +50,31 @@
         downloadError = false;
 
         if (device.is.iOS) {
-            // iOS: blob fetch → shareFile (Save to Files/Photos).
-            // Never auto-open the raw CDN URL — show the error panel instead
-            // so the user can explicitly choose to open it in Safari.
+            // iOS Safari: fetch blob → Web Share sheet (Save Video / Save to Files).
+            // canShare({ files }) guards against browsers where file sharing is unavailable.
+            // On failure, show the hint panel so the user can manually open the video.
             try {
                 const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
                 if (!resp.ok) throw new Error();
                 const blob = await resp.blob();
                 const name = filename ?? 'snapsave-download.mp4';
                 const f = new File([blob], name, { type: blob.type || 'video/mp4' });
-                await shareFile(f).catch(() => openFile(f));
+
+                if (navigator.canShare?.({ files: [f] })) {
+                    try {
+                        await navigator.share({ files: [f], title: name });
+                    } catch (shareErr: unknown) {
+                        // AbortError = user dismissed the share sheet — not an error
+                        if ((shareErr as { name?: string })?.name !== 'AbortError') {
+                            downloadError = true;
+                        }
+                    }
+                } else {
+                    // File sharing not supported — open in new tab so the user can
+                    // tap Safari's share button → Save Video
+                    window.open(url, '_blank', 'noopener,noreferrer');
+                    downloadError = true;
+                }
             } catch {
                 downloadError = true;
             }
@@ -131,10 +146,11 @@
             </button>
 
             {#if downloadError}
-                <div class="error-panel">
+                <!-- iOS: calm hint panel. Desktop: error panel. -->
+                <div class="hint-panel" class:is-error={!device.is.iOS}>
                     <p>
                         {#if device.is.iOS}
-                            Safari blocked direct saving for this file. Tap Open manually, then use Share → Save Video.
+                            iPhone Safari requires using the share sheet to save videos.
                         {:else}
                             Automatic download isn't available for this link.
                         {/if}
@@ -143,7 +159,7 @@
                         <a href={url} target="_blank" rel="noopener noreferrer" class="manual-link">
                             <IconExternalLink />
                             {#if device.is.iOS}
-                                Open manually
+                                Open Video
                             {:else}
                                 Open manually (right-click → Save As)
                             {/if}
@@ -270,10 +286,10 @@
         flex-shrink: 0;
     }
 
-    /* Error / manual fallback */
-    .error-panel {
-        background: rgba(220, 38, 38, 0.07);
-        border: 1px solid rgba(220, 38, 38, 0.18);
+    /* ── Helper / fallback panel ── */
+    .hint-panel {
+        background: color-mix(in srgb, var(--blue) 8%, transparent);
+        border: 1px solid color-mix(in srgb, var(--blue) 20%, transparent);
         border-radius: 10px;
         padding: 12px 14px;
         display: flex;
@@ -281,10 +297,21 @@
         gap: 8px;
     }
 
-    .error-panel p {
+    .hint-panel p {
         margin: 0;
         font-size: 13px;
         font-weight: 500;
+        color: var(--secondary);
+        line-height: 1.45;
+    }
+
+    /* Desktop error state — red instead of calm blue */
+    .hint-panel.is-error {
+        background: rgba(220, 38, 38, 0.07);
+        border-color: rgba(220, 38, 38, 0.18);
+    }
+
+    .hint-panel.is-error p {
         color: var(--red);
     }
 
