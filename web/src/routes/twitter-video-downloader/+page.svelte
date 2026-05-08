@@ -32,6 +32,7 @@
     <meta property="og:description" content="Download Twitter and X videos for free in HD. No login required. Paste any public tweet link and save instantly." />
     <meta name="twitter:title" content="Twitter / X Video Downloader — SnapSave" />
     <meta name="twitter:description" content="Download Twitter and X videos free in HD. No login required." />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I download a Twitter / X video?","acceptedAnswer":{"@type":"Answer","text":"Open the tweet containing the video, copy the URL from your browser's address bar, paste it into SnapSave above, and click download."}},{"@type":"Question","name":"Can I download Twitter GIFs?","acceptedAnswer":{"@type":"Answer","text":"Yes. SnapSave can download Twitter GIFs as video files (MP4 format)."}},{"@type":"Question","name":"Do I need a Twitter / X account?","acceptedAnswer":{"@type":"Answer","text":"No. SnapSave works with public tweets without any Twitter login."}},{"@type":"Question","name":"What quality are Twitter videos downloaded in?","acceptedAnswer":{"@type":"Answer","text":"SnapSave fetches the best available quality — Twitter typically provides videos up to 1080p."}},{"@type":"Question","name":"Why can't I download a Twitter video?","acceptedAnswer":{"@type":"Answer","text":"Videos from protected or suspended accounts and deleted tweets cannot be downloaded. Make sure the tweet is publicly accessible."}}]}</script>
 </svelte:head>
 
 <div class="lp-page">

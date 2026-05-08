@@ -72,6 +72,7 @@
     <meta property="og:title" content="SnapSave — Download Videos from Instagram, TikTok, Facebook & More" />
     <meta name="twitter:title" content="SnapSave — Social Media Video Downloader" />
     <meta name="description" content="Save videos from Instagram, TikTok, Facebook, Twitter, Pinterest, Reddit, Snapchat and more. Free, fast, no sign-up required." />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is SnapSave free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes, SnapSave is completely free. No subscription, no hidden fees, no credit card required."}},{"@type":"Question","name":"Do I need to create an account?","acceptedAnswer":{"@type":"Answer","text":"No account needed. Just paste your link and download. We believe privacy means not collecting data in the first place."}},{"@type":"Question","name":"What video quality can I download?","acceptedAnswer":{"@type":"Answer","text":"SnapSave fetches the best available quality for your link. You can also choose to download audio-only."}},{"@type":"Question","name":"Why isn't my link downloading?","acceptedAnswer":{"@type":"Answer","text":"Some content is restricted (private accounts, region-locked, age-gated, or live streams). Make sure the content is publicly accessible and try again."}},{"@type":"Question","name":"Is it legal to download videos?","acceptedAnswer":{"@type":"Answer","text":"Downloading for personal use is generally fine in most regions. Always respect creators' rights and platform terms. Do not re-distribute content without permission."}},{"@type":"Question","name":"Which platforms are supported?","acceptedAnswer":{"@type":"Answer","text":"Instagram, TikTok, Facebook, Twitter/X, Pinterest, Reddit, Snapchat, Vimeo, Twitch, SoundCloud, Dailymotion, and many more."}}]}</script>
 </svelte:head>
 
 <div id="snapsave-page">
@@ -90,6 +91,12 @@
 
             <div id="hero-omnibox">
                 <Omnibox />
+            </div>
+
+            <div id="hero-trust">
+                <span class="trust-chip">No sign-up required</span>
+                <span class="trust-chip">Private by default</span>
+                <span class="trust-chip">Works on iPhone Safari</span>
             </div>
 
             <div id="hero-services">
@@ -311,6 +318,35 @@
         max-width: 500px;
         margin: 0;
         font-weight: 400;
+    }
+
+    #hero-trust {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        margin-top: -4px;
+    }
+
+    .trust-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11.5px;
+        font-weight: 500;
+        color: var(--gray);
+        opacity: 0.8;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--button-stroke);
+        background: var(--button);
+    }
+
+    .trust-chip::before {
+        content: "✓";
+        color: var(--blue);
+        font-size: 10px;
+        font-weight: 700;
     }
 
     #hero-omnibox {

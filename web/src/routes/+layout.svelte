@@ -42,9 +42,11 @@
         "/instagram-video-downloader",
         "/instagram-reels-downloader",
         "/tiktok-video-downloader",
-        "/youtube-shorts-downloader",
         "/facebook-video-downloader",
         "/twitter-video-downloader",
+        "/pinterest-video-downloader",
+        "/reddit-video-downloader",
+        "/snapchat-video-downloader",
     ]);
 
     afterNavigate(async () => {
@@ -75,6 +77,8 @@
             content="https://{env.HOST}{$page.url.pathname}"
         />
     {/if}
+
+    <link rel="canonical" href="https://snapssave.com{$page.url.pathname}" />
 
     {#if device.is.mobile}
         <meta
