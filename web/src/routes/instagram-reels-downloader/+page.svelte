@@ -96,9 +96,10 @@
             <div class="lp-link-grid">
                 <a href="/instagram-video-downloader" class="lp-link">Instagram Video Downloader</a>
                 <a href="/tiktok-video-downloader" class="lp-link">TikTok Video Downloader</a>
-                <a href="/youtube-shorts-downloader" class="lp-link">YouTube Shorts Downloader</a>
                 <a href="/facebook-video-downloader" class="lp-link">Facebook Video Downloader</a>
                 <a href="/twitter-video-downloader" class="lp-link">Twitter Video Downloader</a>
+                <a href="/pinterest-video-downloader" class="lp-link">Pinterest Video Downloader</a>
+                <a href="/reddit-video-downloader" class="lp-link">Reddit Video Downloader</a>
             </div>
         </div>
     </section>

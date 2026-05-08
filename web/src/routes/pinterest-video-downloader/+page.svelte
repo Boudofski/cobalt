@@ -3,75 +3,75 @@
 
     const faqs = [
         {
-            q: "How do I download a TikTok video?",
-            a: "Open TikTok, tap Share on the video, then 'Copy link'. Paste the link into SnapSave above and click download.",
+            q: "How do I download a Pinterest video?",
+            a: "Open the Pinterest pin, tap the share icon or copy the URL from your browser's address bar. Paste the link into SnapSave above and click download.",
         },
         {
-            q: "Will the downloaded TikTok video have a watermark?",
-            a: "SnapSave downloads the original video file from TikTok's servers, which may include a watermark embedded by TikTok. We do not add any additional watermarks.",
+            q: "Can I download Pinterest videos without an account?",
+            a: "Yes. SnapSave works with public Pinterest pins without any login. Just paste the public pin URL.",
         },
         {
-            q: "Can I download TikTok audio only?",
-            a: "Yes. After pasting your link, look for the audio-only option in the download dialog.",
+            q: "Does SnapSave support pin.it short links?",
+            a: "Yes. Both pinterest.com links and pin.it short links are fully supported. Paste either format and SnapSave will handle the rest.",
         },
         {
-            q: "Why isn't my TikTok link working?",
-            a: "Make sure the TikTok account is public and the video is still live. Private, deleted, or region-locked videos cannot be downloaded.",
+            q: "What quality are downloaded Pinterest videos?",
+            a: "SnapSave downloads at the highest quality available from Pinterest's servers, typically HD where the original video was uploaded in high resolution.",
         },
         {
-            q: "Can I download TikTok videos on my iPhone?",
-            a: "Yes. Open snapssave.com in Safari on your iPhone, paste the TikTok link, and save the file using the share sheet.",
+            q: "Why isn't my Pinterest link working?",
+            a: "Make sure the pin is publicly accessible and contains a video (not just a photo). Private boards and deleted pins cannot be downloaded.",
         },
     ];
 </script>
 
 <svelte:head>
-    <title>TikTok Video Downloader — Save TikTok Videos Free | SnapSave</title>
-    <meta name="description" content="Download TikTok videos for free. No account needed. Paste any public TikTok link and save the video instantly with SnapSave." />
-    <meta property="og:title" content="TikTok Video Downloader — Save TikTok Videos Free | SnapSave" />
-    <meta property="og:description" content="Download TikTok videos for free. Paste any public TikTok link and save instantly. No login required." />
-    <meta name="twitter:title" content="TikTok Video Downloader — SnapSave" />
-    <meta name="twitter:description" content="Download TikTok videos free. No login required." />
+    <title>Pinterest Video Downloader — Save Pinterest Videos Free | SnapSave</title>
+    <meta name="description" content="Download Pinterest videos for free in HD. No login required. Paste any public Pinterest pin link and save it instantly with SnapSave." />
+    <meta property="og:title" content="Pinterest Video Downloader — Save Pinterest Videos Free | SnapSave" />
+    <meta property="og:description" content="Download Pinterest videos for free in HD. No login required. Supports pinterest.com and pin.it short links." />
+    <meta name="twitter:title" content="Pinterest Video Downloader — SnapSave" />
+    <meta name="twitter:description" content="Download Pinterest videos free in HD. No login required. Supports pin.it short links." />
 </svelte:head>
 
 <div class="lp-page">
     <section class="lp-hero">
         <div class="lp-hero-inner">
-            <div class="lp-badge">Free · Fast · No Login</div>
-            <h1 class="lp-title">TikTok Video Downloader</h1>
+            <div class="lp-badge">Free · HD · No Login</div>
+            <h1 class="lp-title">Pinterest Video Downloader</h1>
             <p class="lp-sub">
-                Save public TikTok videos instantly. Paste the link below and download — no account, no app needed.
+                Save any public Pinterest video in HD quality. Supports pinterest.com and pin.it links. Paste and download instantly.
             </p>
             <div class="lp-omnibox">
                 <Omnibox />
             </div>
             <p class="lp-disclaimer">
-                Only download public content you own or have permission to save. Respect creators' rights and TikTok's terms.
+                Only download public content you own or have permission to save. Respect creators' rights and Pinterest's terms.
             </p>
         </div>
     </section>
 
     <section class="lp-section">
         <div class="lp-inner">
-            <h2 class="lp-heading">How to download TikTok videos</h2>
+            <h2 class="lp-heading">How to download Pinterest videos</h2>
             <ol class="lp-steps">
-                <li>Open TikTok and find the video you want to save.</li>
-                <li>Tap the <strong>Share</strong> button and select <strong>Copy link</strong>.</li>
+                <li>Open Pinterest and find the video pin you want to save.</li>
+                <li>Tap the share icon and select <strong>Copy link</strong>, or copy the URL from your browser's address bar.</li>
                 <li>Paste the link into SnapSave above.</li>
-                <li>Click download and save the file to your device.</li>
+                <li>Click the download button and save the video to your device.</li>
             </ol>
         </div>
     </section>
 
     <section class="lp-section lp-alt">
         <div class="lp-inner">
-            <h2 class="lp-heading">Why SnapSave?</h2>
+            <h2 class="lp-heading">Why SnapSave for Pinterest?</h2>
             <ul class="lp-bullets">
-                <li><strong>No extra app</strong> — works in any browser on desktop or mobile.</li>
-                <li><strong>Audio support</strong> — download TikTok audio as MP3.</li>
-                <li><strong>Fast</strong> — most downloads complete in seconds.</li>
-                <li><strong>No tracking</strong> — your links are never stored.</li>
-                <li><strong>Multi-platform</strong> — also supports Instagram, Facebook, Twitter, Pinterest, and more.</li>
+                <li><strong>Short links supported</strong> — pin.it and pinterest.com URLs both work.</li>
+                <li><strong>HD quality</strong> — downloads the best available resolution.</li>
+                <li><strong>No account needed</strong> — no Pinterest login required.</li>
+                <li><strong>Private by default</strong> — your links are never stored or logged.</li>
+                <li><strong>Multi-platform</strong> — also works with Instagram, TikTok, Facebook, and more.</li>
             </ul>
         </div>
     </section>
@@ -95,11 +95,11 @@
             <h2 class="lp-heading">Also available</h2>
             <div class="lp-link-grid">
                 <a href="/instagram-video-downloader" class="lp-link">Instagram Video Downloader</a>
-                <a href="/instagram-reels-downloader" class="lp-link">Instagram Reels Downloader</a>
+                <a href="/tiktok-video-downloader" class="lp-link">TikTok Video Downloader</a>
                 <a href="/facebook-video-downloader" class="lp-link">Facebook Video Downloader</a>
                 <a href="/twitter-video-downloader" class="lp-link">Twitter Video Downloader</a>
-                <a href="/pinterest-video-downloader" class="lp-link">Pinterest Video Downloader</a>
                 <a href="/reddit-video-downloader" class="lp-link">Reddit Video Downloader</a>
+                <a href="/snapchat-video-downloader" class="lp-link">Snapchat Video Downloader</a>
             </div>
         </div>
     </section>

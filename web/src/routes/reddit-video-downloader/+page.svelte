@@ -3,75 +3,75 @@
 
     const faqs = [
         {
-            q: "How do I download a TikTok video?",
-            a: "Open TikTok, tap Share on the video, then 'Copy link'. Paste the link into SnapSave above and click download.",
+            q: "How do I download a Reddit video?",
+            a: "Open the Reddit post containing the video, copy the URL from your browser's address bar, paste it into SnapSave above, and click download.",
         },
         {
-            q: "Will the downloaded TikTok video have a watermark?",
-            a: "SnapSave downloads the original video file from TikTok's servers, which may include a watermark embedded by TikTok. We do not add any additional watermarks.",
+            q: "Why does the downloaded Reddit video have no audio?",
+            a: "Reddit hosts video and audio as separate streams. SnapSave merges them automatically when processing — the downloaded file will include audio.",
         },
         {
-            q: "Can I download TikTok audio only?",
-            a: "Yes. After pasting your link, look for the audio-only option in the download dialog.",
+            q: "Do I need a Reddit account to download videos?",
+            a: "No. SnapSave works with public Reddit posts without any login or account.",
         },
         {
-            q: "Why isn't my TikTok link working?",
-            a: "Make sure the TikTok account is public and the video is still live. Private, deleted, or region-locked videos cannot be downloaded.",
+            q: "Can I download Reddit GIFs and clips?",
+            a: "Yes. SnapSave supports Reddit-hosted videos, GIFs (v.redd.it), and clips from subreddits.",
         },
         {
-            q: "Can I download TikTok videos on my iPhone?",
-            a: "Yes. Open snapssave.com in Safari on your iPhone, paste the TikTok link, and save the file using the share sheet.",
+            q: "Why isn't my Reddit link working?",
+            a: "Make sure the post is from a public subreddit and is still live. Posts from private or quarantined subreddits, and deleted posts, cannot be downloaded.",
         },
     ];
 </script>
 
 <svelte:head>
-    <title>TikTok Video Downloader — Save TikTok Videos Free | SnapSave</title>
-    <meta name="description" content="Download TikTok videos for free. No account needed. Paste any public TikTok link and save the video instantly with SnapSave." />
-    <meta property="og:title" content="TikTok Video Downloader — Save TikTok Videos Free | SnapSave" />
-    <meta property="og:description" content="Download TikTok videos for free. Paste any public TikTok link and save instantly. No login required." />
-    <meta name="twitter:title" content="TikTok Video Downloader — SnapSave" />
-    <meta name="twitter:description" content="Download TikTok videos free. No login required." />
+    <title>Reddit Video Downloader — Save Reddit Videos Free | SnapSave</title>
+    <meta name="description" content="Download Reddit videos for free with audio. No login required. Paste any public Reddit video link and save it instantly with SnapSave." />
+    <meta property="og:title" content="Reddit Video Downloader — Save Reddit Videos Free | SnapSave" />
+    <meta property="og:description" content="Download Reddit videos with audio for free. No login required. Supports v.redd.it and all public subreddits." />
+    <meta name="twitter:title" content="Reddit Video Downloader — SnapSave" />
+    <meta name="twitter:description" content="Download Reddit videos with audio, free. No login required." />
 </svelte:head>
 
 <div class="lp-page">
     <section class="lp-hero">
         <div class="lp-hero-inner">
-            <div class="lp-badge">Free · Fast · No Login</div>
-            <h1 class="lp-title">TikTok Video Downloader</h1>
+            <div class="lp-badge">Free · With Audio · No Login</div>
+            <h1 class="lp-title">Reddit Video Downloader</h1>
             <p class="lp-sub">
-                Save public TikTok videos instantly. Paste the link below and download — no account, no app needed.
+                Save public Reddit videos with audio. Supports all subreddits and v.redd.it links. Paste the URL and download instantly.
             </p>
             <div class="lp-omnibox">
                 <Omnibox />
             </div>
             <p class="lp-disclaimer">
-                Only download public content you own or have permission to save. Respect creators' rights and TikTok's terms.
+                Only download public content you own or have permission to save. Respect creators' rights and Reddit's terms.
             </p>
         </div>
     </section>
 
     <section class="lp-section">
         <div class="lp-inner">
-            <h2 class="lp-heading">How to download TikTok videos</h2>
+            <h2 class="lp-heading">How to download Reddit videos</h2>
             <ol class="lp-steps">
-                <li>Open TikTok and find the video you want to save.</li>
-                <li>Tap the <strong>Share</strong> button and select <strong>Copy link</strong>.</li>
+                <li>Open Reddit and navigate to the post containing the video.</li>
+                <li>Copy the post URL from your browser's address bar.</li>
                 <li>Paste the link into SnapSave above.</li>
-                <li>Click download and save the file to your device.</li>
+                <li>Click the download button. Your video will be saved with audio included.</li>
             </ol>
         </div>
     </section>
 
     <section class="lp-section lp-alt">
         <div class="lp-inner">
-            <h2 class="lp-heading">Why SnapSave?</h2>
+            <h2 class="lp-heading">Why SnapSave for Reddit?</h2>
             <ul class="lp-bullets">
-                <li><strong>No extra app</strong> — works in any browser on desktop or mobile.</li>
-                <li><strong>Audio support</strong> — download TikTok audio as MP3.</li>
-                <li><strong>Fast</strong> — most downloads complete in seconds.</li>
-                <li><strong>No tracking</strong> — your links are never stored.</li>
-                <li><strong>Multi-platform</strong> — also supports Instagram, Facebook, Twitter, Pinterest, and more.</li>
+                <li><strong>Audio included</strong> — merges Reddit's separate video and audio streams automatically.</li>
+                <li><strong>All subreddits</strong> — works with any public subreddit post.</li>
+                <li><strong>No Reddit account needed</strong> — just paste the URL and download.</li>
+                <li><strong>Private by default</strong> — your links are never stored or logged.</li>
+                <li><strong>Multi-platform</strong> — also works with Instagram, TikTok, Facebook, and more.</li>
             </ul>
         </div>
     </section>
@@ -95,11 +95,11 @@
             <h2 class="lp-heading">Also available</h2>
             <div class="lp-link-grid">
                 <a href="/instagram-video-downloader" class="lp-link">Instagram Video Downloader</a>
-                <a href="/instagram-reels-downloader" class="lp-link">Instagram Reels Downloader</a>
+                <a href="/tiktok-video-downloader" class="lp-link">TikTok Video Downloader</a>
                 <a href="/facebook-video-downloader" class="lp-link">Facebook Video Downloader</a>
                 <a href="/twitter-video-downloader" class="lp-link">Twitter Video Downloader</a>
                 <a href="/pinterest-video-downloader" class="lp-link">Pinterest Video Downloader</a>
-                <a href="/reddit-video-downloader" class="lp-link">Reddit Video Downloader</a>
+                <a href="/snapchat-video-downloader" class="lp-link">Snapchat Video Downloader</a>
             </div>
         </div>
     </section>

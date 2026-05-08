@@ -13,7 +13,7 @@
 
 SnapSave is a fast, free, and private social media video downloader.
 
-paste any link from Instagram, TikTok, YouTube, Facebook, Twitter/X, and dozens more — and download the media instantly. no account, no tracking, no nonsense.
+paste any link from Instagram, TikTok, Facebook, Twitter/X, Pinterest, Reddit, and dozens more — and download the media instantly. no account, no tracking, no nonsense.
 </section>
 
 <section id="privacy-efficiency">

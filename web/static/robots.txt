@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /youtube-shorts-downloader
 
 Sitemap: https://snapssave.com/sitemap.xml

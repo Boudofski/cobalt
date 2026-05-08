@@ -18,7 +18,7 @@
         {
             icon: IconWorld,
             title: "Multiple Platforms",
-            desc: "Instagram, TikTok, YouTube, Facebook, Twitter, and dozens more all supported out of the box.",
+            desc: "Instagram, TikTok, Facebook, Twitter, Pinterest, Reddit, and dozens more all supported out of the box.",
         },
         {
             icon: IconUserOff,
@@ -33,9 +33,10 @@
     ];
 
     const platforms = [
-        "Instagram", "TikTok", "YouTube", "Facebook",
-        "Twitter / X", "Reddit", "Twitch", "Vimeo",
-        "Pinterest", "Tumblr", "SoundCloud", "Dailymotion",
+        "Instagram", "TikTok", "Facebook", "Twitter / X",
+        "Pinterest", "Reddit", "Snapchat", "Vimeo",
+        "Twitch", "Tumblr", "SoundCloud", "Dailymotion",
+        "Bluesky", "Loom", "Streamable", "VK",
     ];
 
     const faqs = [
@@ -61,15 +62,16 @@
         },
         {
             q: "Which platforms are supported?",
-            a: "Instagram, TikTok, YouTube, Facebook, Twitter/X, Reddit, Twitch, Vimeo, Pinterest, SoundCloud, Dailymotion, and many more. Click “supported services” in the downloader to see the full list.",
+            a: "Instagram, TikTok, Facebook, Twitter/X, Pinterest, Reddit, Snapchat, Vimeo, Twitch, SoundCloud, Dailymotion, and many more. Click “supported services” in the downloader to see the full list.",
         },
     ];
 </script>
 
 <svelte:head>
-    <title>SnapSave — Social Media Video Downloader</title>
-    <meta property="og:title" content="SnapSave — Social Media Video Downloader" />
+    <title>SnapSave — Download Videos from Instagram, TikTok, Facebook & More</title>
+    <meta property="og:title" content="SnapSave — Download Videos from Instagram, TikTok, Facebook & More" />
     <meta name="twitter:title" content="SnapSave — Social Media Video Downloader" />
+    <meta name="description" content="Save videos from Instagram, TikTok, Facebook, Twitter, Pinterest, Reddit, Snapchat and more. Free, fast, no sign-up required." />
 </svelte:head>
 
 <div id="snapsave-page">
@@ -83,7 +85,7 @@
                 <span class="gradient-text">Social Media</span> in Seconds
             </h1>
             <p id="hero-sub">
-                Fast, free, and secure downloader for Instagram, TikTok, YouTube, and more.
+                Fast, free, and private downloader for Instagram, TikTok, Facebook, Twitter, Pinterest, and more.
             </p>
 
             <div id="hero-omnibox">
@@ -203,12 +205,14 @@
                 <a href="/instagram-video-downloader">Instagram Video</a>
                 <a href="/instagram-reels-downloader">Instagram Reels</a>
                 <a href="/tiktok-video-downloader">TikTok Video</a>
-                <a href="/youtube-shorts-downloader">YouTube Shorts</a>
                 <a href="/facebook-video-downloader">Facebook Video</a>
                 <a href="/twitter-video-downloader">Twitter Video</a>
+                <a href="/pinterest-video-downloader">Pinterest Video</a>
+                <a href="/reddit-video-downloader">Reddit Video</a>
+                <a href="/snapchat-video-downloader">Snapchat Video</a>
             </nav>
             <p id="footer-disclaimer">
-                SnapSave is not affiliated with Instagram, TikTok, YouTube, Facebook, Meta, or any other platform. Users are responsible for respecting copyright and platform terms. Only download public videos you own or have permission to save.
+                SnapSave is not affiliated with Instagram, TikTok, Facebook, Meta, X Corp, Pinterest, Reddit, Snapchat, or any other platform. Users are responsible for respecting copyright and platform terms. Only download public content you own or have permission to save.
             </p>
             <p id="footer-copy">© {new Date().getFullYear()} SnapSave. All rights reserved.</p>
         </div>

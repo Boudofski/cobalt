@@ -71,7 +71,7 @@
                 <li><strong>HD quality</strong> — downloads at the highest resolution available.</li>
                 <li><strong>Fast</strong> — most downloads complete in under 5 seconds.</li>
                 <li><strong>Private</strong> — we never store your links or files.</li>
-                <li><strong>Multi-platform</strong> — also works with TikTok, YouTube, Facebook, and more.</li>
+                <li><strong>Multi-platform</strong> — also works with TikTok, Facebook, Twitter, Pinterest, and more.</li>
             </ul>
         </div>
     </section>
@@ -96,9 +96,10 @@
             <div class="lp-link-grid">
                 <a href="/instagram-reels-downloader" class="lp-link">Instagram Reels Downloader</a>
                 <a href="/tiktok-video-downloader" class="lp-link">TikTok Video Downloader</a>
-                <a href="/youtube-shorts-downloader" class="lp-link">YouTube Shorts Downloader</a>
                 <a href="/facebook-video-downloader" class="lp-link">Facebook Video Downloader</a>
                 <a href="/twitter-video-downloader" class="lp-link">Twitter Video Downloader</a>
+                <a href="/pinterest-video-downloader" class="lp-link">Pinterest Video Downloader</a>
+                <a href="/reddit-video-downloader" class="lp-link">Reddit Video Downloader</a>
             </div>
         </div>
     </section>

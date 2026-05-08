@@ -71,7 +71,7 @@
                 <li><strong>HD quality</strong> — downloads the highest resolution available.</li>
                 <li><strong>Supports Reels</strong> — works with both regular videos and Facebook Reels.</li>
                 <li><strong>Zero logging</strong> — your links are never stored or tracked.</li>
-                <li><strong>All platforms</strong> — also works with Instagram, TikTok, YouTube, and more.</li>
+                <li><strong>All platforms</strong> — also works with Instagram, TikTok, Twitter, Pinterest, and more.</li>
             </ul>
         </div>
     </section>
@@ -97,8 +97,9 @@
                 <a href="/instagram-video-downloader" class="lp-link">Instagram Video Downloader</a>
                 <a href="/instagram-reels-downloader" class="lp-link">Instagram Reels Downloader</a>
                 <a href="/tiktok-video-downloader" class="lp-link">TikTok Video Downloader</a>
-                <a href="/youtube-shorts-downloader" class="lp-link">YouTube Shorts Downloader</a>
                 <a href="/twitter-video-downloader" class="lp-link">Twitter Video Downloader</a>
+                <a href="/pinterest-video-downloader" class="lp-link">Pinterest Video Downloader</a>
+                <a href="/reddit-video-downloader" class="lp-link">Reddit Video Downloader</a>
             </div>
         </div>
     </section>

@@ -1,7 +1,7 @@
 {
     "name": "SnapSave",
     "short_name": "SnapSave",
-    "description": "Download videos from Instagram, TikTok, YouTube and more instantly.",
+    "description": "Download videos from Instagram, TikTok, Facebook, Twitter, Pinterest and more instantly.",
     "start_url": "/",
     "icons": [
         {
