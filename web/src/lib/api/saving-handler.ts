@@ -29,7 +29,7 @@ const detectPlatform = (url: string): string => {
         if (/twitch\.tv/.test(h)) return 'Twitch';
         if (/reddit\.com/.test(h)) return 'Reddit';
         if (/vimeo\.com/.test(h)) return 'Vimeo';
-        if (/pinterest\.com/.test(h)) return 'Pinterest';
+        if (/pinterest\.com/.test(h) || h === 'pin.it') return 'Pinterest';
         if (/snapchat\.com/.test(h)) return 'Snapchat';
         if (/soundcloud\.com/.test(h)) return 'SoundCloud';
         if (/bilibili\.com/.test(h)) return 'Bilibili';
@@ -71,10 +71,13 @@ export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerAr
     // can never be blob-downloaded by the browser. Force alwaysProxy so cobalt
     // converts redirect → tunnel through our CORS-enabled API.
     const inputUrl = (url || request?.url || '').toLowerCase();
-    const forcedProxy = /pinterest\.com/.test(inputUrl) ? true : getSetting("save", "alwaysProxy");
+    // pin.it is Pinterest's short-link domain — alias it so the proxy is forced
+    // for both https://pinterest.com/... and https://pin.it/... links.
+    const isPinterest = /pinterest\.com|\/\/pin\.it\//.test(inputUrl);
+    const forcedProxy = isPinterest ? true : getSetting("save", "alwaysProxy");
 
-    if (import.meta.env.DEV && /pinterest\.com/.test(inputUrl)) {
-        console.debug('[SnapSave] Pinterest detected — forcing alwaysProxy=true', { inputUrl, forcedProxy });
+    if (import.meta.env.DEV && isPinterest) {
+        console.debug('[SnapSave] Pinterest / pin.it detected — forcing alwaysProxy=true', { inputUrl, forcedProxy });
     }
 
     const selectedRequest = request || {
