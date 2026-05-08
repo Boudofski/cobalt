@@ -27,10 +27,14 @@
     let close: () => void;
     let downloading = false;
     let downloadError = false;
-    // iOS two-stage state: stage 1 = anchor download attempted,
-    // stage 2 = user taps "Save / Share File" to trigger share sheet
+
+    // iOS download state
+    // iosDownloadAttempted: a download method was triggered (show hint panel)
+    // iosBlobFile: blob fetched for redirect-path or lazy share fallback
+    // iosFetchingShare: lazy blob fetch in progress for share fallback
+    let iosDownloadAttempted = false;
     let iosBlobFile: File | null = null;
-    let iosAnchorAttempted = false;
+    let iosFetchingShare = false;
 
     $: format = filename?.split('.').pop()?.toUpperCase() ?? '';
 
@@ -48,28 +52,92 @@
         return filename.length > 44 ? filename.slice(0, 41) + '…' : filename;
     })();
 
-    // Platform-aware fallback filename — Pinterest gets a descriptive default
-    // because its CDN URLs never expose a clean filename segment.
+    // Platform-aware fallback filename — Pinterest CDN URLs never expose a clean
+    // filename segment so we give it a recognisable default.
     $: safeFilename = filename
         ?? (platform === 'Pinterest' ? 'snapsave-pinterest-video.mp4' : 'snapsave-download.mp4');
 
-    // ── iOS two-stage download ────────────────────────────────────────────────
+    // ── iOS: share sheet fallback ─────────────────────────────────────────────
     //
-    // Stage 1 (handleDownloadIOS): fetch blob → click <a download>.
-    //   Safari iOS 13+ supports blob: URL downloads via the download attribute;
-    //   the file lands in Files / Downloads. We can't detect success, but we
-    //   surface a follow-up "Save / Share File" button for users whose download
-    //   didn't trigger (older iOS, non-Safari WebKit, large files).
+    // Used as stage-2 for both paths:
+    //   - tunnel path: iosBlobFile is null → fetches blob lazily, then shares
+    //   - redirect path: iosBlobFile already set by handleDownloadIOSRedirect → shares directly
     //
-    // Stage 2 (handleIOSShare): navigator.share({ files }) — native share sheet
-    //   with "Save to Files", "Save Video", AirDrop, etc.
-    //
-    // Last resort: calm error panel with a manual "Open Video" link.
+    // navigator.share({ files }) is user-triggered (called from on:click),
+    // so the user gesture is always valid when this runs.
 
-    const handleDownloadIOS = async () => {
+    const tryShare = async (f: File) => {
+        try {
+            if (navigator.canShare?.({ files: [f] })) {
+                await navigator.share({ files: [f], title: f.name });
+            } else {
+                downloadError = true;
+            }
+        } catch (e: unknown) {
+            // AbortError = user dismissed the sheet — not an error
+            if ((e as { name?: string })?.name !== 'AbortError') {
+                downloadError = true;
+            }
+        }
+    };
+
+    const handleIOSShareFallback = async () => {
+        // If we already have the blob (redirect path fetched it), share directly.
+        if (iosBlobFile) {
+            return tryShare(iosBlobFile);
+        }
+
+        // Lazy blob fetch for the tunnel navigation path.
+        iosFetchingShare = true;
+        try {
+            const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const blob = await resp.blob();
+            const f = new File([blob], safeFilename, { type: blob.type || 'video/mp4' });
+            iosBlobFile = f;
+            await tryShare(f);
+        } catch {
+            downloadError = true;
+        } finally {
+            iosFetchingShare = false;
+        }
+    };
+
+    // ── iOS primary paths ─────────────────────────────────────────────────────
+
+    // Tunnel path: navigate browser directly to the tunnel URL.
+    //
+    // The backend's /tunnel endpoint already sets:
+    //   Content-Disposition: attachment; filename="..."
+    //   Content-Type: video/mp4  (forwarded from upstream)
+    //
+    // Safari iOS 13+ honours Content-Disposition: attachment and triggers its
+    // native download manager without loading the entire file into RAM first.
+    // This is the most reliable approach for large files and slow connections.
+    //
+    // We open in a new tab (target=_blank) so the web app page is never lost.
+    const handleDownloadIOSTunnel = () => {
+        const w = window.open(url, '_blank', 'noopener,noreferrer');
+        if (!w) {
+            // Popup blocked (rare in direct click handlers but possible).
+            // Fall back to the blob approach.
+            handleDownloadIOSRedirect();
+            return;
+        }
+        iosDownloadAttempted = true;
+    };
+
+    // Redirect / fallback path: fetch blob → <a download> click.
+    //
+    // Used for redirect-type URLs (CDN URLs that lack our Content-Disposition
+    // header) and as the blob fallback when window.open is blocked.
+    //
+    // The <a download> click saves the blob to Files in Safari iOS 13+.
+    // iosBlobFile is kept for the share sheet fallback (stage 2).
+    const handleDownloadIOSRedirect = async () => {
         downloading = true;
         downloadError = false;
-        iosAnchorAttempted = false;
+        iosDownloadAttempted = false;
         iosBlobFile = null;
 
         try {
@@ -79,7 +147,7 @@
             const mime = blob.type || 'video/mp4';
             const f = new File([blob], safeFilename, { type: mime });
 
-            // Attempt 1: <a download> with blob URL — triggers file download in Safari iOS 13+
+            // <a download> with blob URL — triggers download in Safari iOS 13+
             const blobUrl = URL.createObjectURL(f);
             const a = document.createElement('a');
             a.href = blobUrl;
@@ -89,33 +157,13 @@
             document.body.removeChild(a);
             setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
 
-            // Keep the file blob for the share sheet fallback (stage 2)
             iosBlobFile = f;
-            iosAnchorAttempted = true;
+            iosDownloadAttempted = true;
         } catch {
-            // CORS blocked or network failure — show calm fallback panel
+            // CORS blocked, network error, or large file OOM — show calm fallback
             downloadError = true;
         } finally {
             downloading = false;
-        }
-    };
-
-    // Stage 2: user-triggered share sheet with the already-fetched File object.
-    // Triggered by the "Save / Share File" button in the hint panel.
-    const handleIOSShare = async () => {
-        if (!iosBlobFile) return;
-        try {
-            if (navigator.canShare?.({ files: [iosBlobFile] })) {
-                await navigator.share({ files: [iosBlobFile], title: iosBlobFile.name });
-            } else {
-                // File sharing not supported — fall through to manual panel
-                downloadError = true;
-            }
-        } catch (e: unknown) {
-            // AbortError = user dismissed the share sheet — not an error
-            if ((e as { name?: string })?.name !== 'AbortError') {
-                downloadError = true;
-            }
         }
     };
 
@@ -125,17 +173,30 @@
         if (file) return openFile(file);
         if (!url) return;
 
-        // iOS always uses the two-stage blob + share path regardless of urlType.
-        // Raw link opening is the last-resort fallback only, never automatic.
-        if (device.is.iOS) return handleDownloadIOS();
+        if (device.is.iOS) {
+            // Reset UI state for a fresh attempt
+            downloadError = false;
+            iosDownloadAttempted = false;
+            iosBlobFile = null;
 
+            if (urlType === 'tunnel') {
+                // Primary: navigate to the backend tunnel URL which has
+                // Content-Disposition: attachment.  No blob RAM overhead.
+                return handleDownloadIOSTunnel();
+            }
+
+            // redirect or unknown type: blob approach
+            return handleDownloadIOSRedirect();
+        }
+
+        // Desktop / Android
         downloading = true;
         downloadError = false;
 
         if (urlType === 'redirect') {
-            // Redirect = CDN URL from the platform. Try blob fetch + anchor click.
-            // If CORS blocks it, show the manual panel (right-click → Save As).
-            // Never auto-open the raw CDN link — that navigates away from the app.
+            // CDN redirect URL — try blob fetch + anchor click.
+            // If CORS blocks it, show the manual-download panel.
+            // Never auto-open the raw CDN link as a first action.
             try {
                 const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
                 if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -152,8 +213,8 @@
                 downloadError = true;
             }
         } else {
-            // Tunnel URL — CORS-enabled proxy. Standard blob download via autoDownload.
-            // openFallback: false so a failure shows the error panel, not a new tab.
+            // Tunnel URL — CORS-enabled proxy. autoDownload with openFallback:false
+            // so a CORS failure surfaces the error panel instead of opening a new tab.
             const result = await autoDownload(url, filename, { openFallback: false });
             if (result === 'failed') downloadError = true;
         }
@@ -192,16 +253,26 @@
                 on:click={handleDownload}
             >
                 <IconDownload />
-                {downloading ? 'Preparing…' : 'Download File'}
+                {downloading ? 'Preparing your file…' : 'Download File'}
             </button>
 
-            <!-- iOS stage 1 success: offer share sheet as second save method -->
-            {#if device.is.iOS && iosAnchorAttempted && !downloadError}
+            <!-- iOS: download was triggered — show hint + share fallback button -->
+            {#if device.is.iOS && iosDownloadAttempted && !downloadError}
                 <div class="hint-panel">
-                    <p>Your file is ready. iPhone Safari may ask you to save through the share sheet.</p>
-                    <button class="btn-share" on:click={handleIOSShare}>
+                    <p>
+                        {#if urlType === 'tunnel'}
+                            Use Save to Files or Save Video if Safari prompts you.
+                        {:else}
+                            iPhone Safari may ask you to save through the share sheet.
+                        {/if}
+                    </p>
+                    <button
+                        class="btn-share"
+                        on:click={handleIOSShareFallback}
+                        disabled={iosFetchingShare}
+                    >
                         <IconShare2 />
-                        Save / Share File
+                        {iosFetchingShare ? 'Preparing…' : 'Save / Share File'}
                     </button>
                 </div>
             {/if}
@@ -363,7 +434,8 @@
         transition: background 0.12s;
     }
 
-    .btn-share:hover { background: var(--button-elevated-hover); }
+    .btn-share:hover:not(:disabled) { background: var(--button-elevated-hover); }
+    .btn-share:disabled { opacity: 0.6; cursor: wait; }
 
     .btn-share :global(svg) {
         width: 16px;
@@ -372,7 +444,7 @@
         flex-shrink: 0;
     }
 
-    /* ── Helper / fallback panel ── */
+    /* ── Hint / fallback panel ── */
     .hint-panel {
         background: color-mix(in srgb, var(--blue) 8%, transparent);
         border: 1px solid color-mix(in srgb, var(--blue) 20%, transparent);
