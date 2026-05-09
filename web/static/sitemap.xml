@@ -82,13 +82,6 @@
     <priority>0.5</priority>
   </url>
 
-  <!-- Status page -->
-  <url>
-    <loc>https://snapssave.com/status</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.4</priority>
-  </url>
-
   <!-- Blog index -->
   <url>
     <loc>https://snapssave.com/blog</loc>
@@ -96,7 +89,7 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Blog articles -->
+  <!-- Blog articles — platform guides -->
   <url>
     <loc>https://snapssave.com/blog/how-to-download-pinterest-videos-on-iphone</loc>
     <changefreq>monthly</changefreq>
@@ -126,6 +119,48 @@
     <loc>https://snapssave.com/blog/how-to-save-facebook-reels-online</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://snapssave.com/blog/how-to-download-snapchat-videos-online</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://snapssave.com/blog/how-to-save-vimeo-videos-for-personal-use</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://snapssave.com/blog/how-to-download-soundcloud-audio-online</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://snapssave.com/blog/how-to-save-bluesky-videos-and-media</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://snapssave.com/blog/how-to-download-loom-videos</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://snapssave.com/blog/how-to-save-streamable-videos-online</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Blog articles — general guides -->
+  <url>
+    <loc>https://snapssave.com/blog/why-your-social-media-video-download-is-not-working</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://snapssave.com/blog/how-to-copy-a-video-link</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://snapssave.com/blog/best-social-media-video-downloader-for-mobile</loc>

@@ -41,22 +41,22 @@
 
     const guides = [
         {
+            slug: "how-to-download-pinterest-videos-on-iphone",
+            title: "Download Pinterest Videos on iPhone and Android",
+            excerpt: "No native save button? Here's the fastest way to save any public Pinterest video to your phone.",
+            tag: "Pinterest",
+        },
+        {
+            slug: "why-your-social-media-video-download-is-not-working",
+            title: "Why Your Video Download Is Not Working",
+            excerpt: "Private content, expired links, platform blocks — the full troubleshooting guide to fix it fast.",
+            tag: "Troubleshooting",
+        },
+        {
             slug: "how-to-download-tiktok-videos-without-installing-an-app",
             title: "Download TikTok Videos Without Installing an App",
             excerpt: "You don't need to install anything. Paste the link in your browser and download in seconds.",
             tag: "TikTok",
-        },
-        {
-            slug: "how-to-save-instagram-reels-online",
-            title: "Save Instagram Reels Without an App",
-            excerpt: "Instagram removed the native Reels download button. Here's the simplest workaround.",
-            tag: "Instagram",
-        },
-        {
-            slug: "best-social-media-video-downloader-for-mobile",
-            title: "Best Video Downloader for Mobile in 2025",
-            excerpt: "What actually works on iPhone and Android — browser tools vs apps, compared.",
-            tag: "Guide",
         },
     ];
 

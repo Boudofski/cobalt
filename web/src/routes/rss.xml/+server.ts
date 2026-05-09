@@ -4,6 +4,54 @@ const BASE = "https://snapssave.com";
 
 const posts = [
     {
+        title: "Why Your Social Media Video Download Is Not Working",
+        description: "Download failing? Private content, expired links, platform blocks, browser issues — the complete troubleshooting guide to fix it fast.",
+        slug: "why-your-social-media-video-download-is-not-working",
+        pubDate: "Fri, 09 May 2025 12:00:00 GMT",
+    },
+    {
+        title: "How to Copy a Video Link From Instagram, TikTok, Facebook, X, Pinterest, and Reddit",
+        description: "To download a video you need the right URL — not a profile or search page, but the specific post link. Here's how to get it from every platform.",
+        slug: "how-to-copy-a-video-link",
+        pubDate: "Fri, 09 May 2025 11:00:00 GMT",
+    },
+    {
+        title: "How to Save Streamable Videos Online",
+        description: "Streamable links shared on Reddit and Discord can vanish at any time. Download any public Streamable clip in seconds — no account needed.",
+        slug: "how-to-save-streamable-videos-online",
+        pubDate: "Fri, 09 May 2025 10:00:00 GMT",
+    },
+    {
+        title: "How to Download Loom Videos You Have Permission to Save",
+        description: "Loom videos can disappear when owners delete them. Save publicly accessible Loom recordings for offline use — no extension required.",
+        slug: "how-to-download-loom-videos",
+        pubDate: "Fri, 09 May 2025 10:00:00 GMT",
+    },
+    {
+        title: "How to Save Bluesky Videos and Media",
+        description: "Bluesky has grown rapidly as a Twitter alternative. Public posts are genuinely public — here's how to save Bluesky videos to your device.",
+        slug: "how-to-save-bluesky-videos-and-media",
+        pubDate: "Fri, 09 May 2025 10:00:00 GMT",
+    },
+    {
+        title: "How to Download SoundCloud Audio Online",
+        description: "SoundCloud hosts millions of independent tracks and podcasts. Save any public track as an MP3 — no subscription, no account, no extension.",
+        slug: "how-to-download-soundcloud-audio-online",
+        pubDate: "Fri, 09 May 2025 10:00:00 GMT",
+    },
+    {
+        title: "How to Save Vimeo Videos for Personal Use",
+        description: "Vimeo hosts high-quality independent films and creative projects. Save any public Vimeo video to your device without installing anything.",
+        slug: "how-to-save-vimeo-videos-for-personal-use",
+        pubDate: "Fri, 09 May 2025 10:00:00 GMT",
+    },
+    {
+        title: "How to Download Snapchat Videos Online",
+        description: "Public Snapchat Spotlight videos are openly accessible on the web. Save them to your device in seconds — no app or account required.",
+        slug: "how-to-download-snapchat-videos-online",
+        pubDate: "Fri, 09 May 2025 10:00:00 GMT",
+    },
+    {
         title: "How to Download Pinterest Videos on iPhone and Android",
         description: "Pinterest doesn't have a native video save button. Here's the fastest way to download any public Pinterest pin video to your phone — no app required.",
         slug: "how-to-download-pinterest-videos-on-iphone",

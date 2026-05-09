@@ -49,6 +49,70 @@
             readTime: "4 min read",
         },
         {
+            slug: "how-to-download-snapchat-videos-online",
+            title: "How to Download Snapchat Videos Online",
+            excerpt: "Public Snapchat Spotlight videos are openly accessible on the web. Here's how to save them to your device in seconds — no app or account required.",
+            tag: "Snapchat",
+            date: "May 2025",
+            readTime: "4 min read",
+        },
+        {
+            slug: "how-to-save-vimeo-videos-for-personal-use",
+            title: "How to Save Vimeo Videos for Personal Use",
+            excerpt: "Vimeo hosts some of the highest-quality independent films and creative projects online. Save any public Vimeo video to your device without installing anything.",
+            tag: "Vimeo",
+            date: "May 2025",
+            readTime: "4 min read",
+        },
+        {
+            slug: "how-to-download-soundcloud-audio-online",
+            title: "How to Download SoundCloud Audio Online",
+            excerpt: "SoundCloud hosts millions of independent tracks and podcasts. Save any public track as an MP3 — no subscription, no account, no extension.",
+            tag: "SoundCloud",
+            date: "May 2025",
+            readTime: "4 min read",
+        },
+        {
+            slug: "how-to-save-bluesky-videos-and-media",
+            title: "How to Save Bluesky Videos and Media",
+            excerpt: "Bluesky has grown rapidly as a Twitter alternative. Public posts are genuinely public — here's how to save Bluesky videos to your device easily.",
+            tag: "Bluesky",
+            date: "May 2025",
+            readTime: "4 min read",
+        },
+        {
+            slug: "how-to-download-loom-videos",
+            title: "How to Download Loom Videos You Have Permission to Save",
+            excerpt: "Loom videos can disappear when owners delete them. Here's how to save publicly accessible Loom recordings for offline use — no extension required.",
+            tag: "Loom",
+            date: "May 2025",
+            readTime: "4 min read",
+        },
+        {
+            slug: "how-to-save-streamable-videos-online",
+            title: "How to Save Streamable Videos Online",
+            excerpt: "Streamable links shared on Reddit and Discord can vanish at any time. Download and keep a copy of any public Streamable clip in seconds.",
+            tag: "Streamable",
+            date: "May 2025",
+            readTime: "3 min read",
+        },
+        {
+            slug: "why-your-social-media-video-download-is-not-working",
+            title: "Why Your Social Media Video Download Is Not Working",
+            excerpt: "Download failing? Private content, expired links, platform blocks, browser issues — here's the complete troubleshooting guide to fix it fast.",
+            tag: "Troubleshooting",
+            date: "May 2025",
+            readTime: "6 min read",
+        },
+        {
+            slug: "how-to-copy-a-video-link",
+            title: "How to Copy a Video Link From Instagram, TikTok, Facebook, X, Pinterest, and Reddit",
+            excerpt: "To download a video you need the right URL — not a profile or search page, but the specific post link. Here's how to get it from every platform.",
+            tag: "Guide",
+            date: "May 2025",
+            readTime: "5 min read",
+        },
+        {
             slug: "best-social-media-video-downloader-for-mobile",
             title: "Best Social Media Video Downloader for Mobile (iPhone & Android)",
             excerpt: "Comparing the best ways to download social media videos on your phone in 2025 — browser-based tools, native apps, and what actually works on iOS Safari.",
@@ -65,13 +129,25 @@
         "Twitter / X": "#1DA1F2",
         Reddit: "#FF4500",
         Facebook: "#1877F2",
+        Snapchat: "#FFFC00",
+        Vimeo: "#1AB7EA",
+        SoundCloud: "#FF5500",
+        Bluesky: "#208BFE",
+        Loom: "#7C3AED",
+        Streamable: "#3B82F6",
+        Troubleshooting: "#F59E0B",
         Guide: "#3B82F6",
+    };
+
+    const tagTextColors = {
+        Snapchat: "#7A7A00",
+        TikTok: "#ffffff",
     };
 </script>
 
 <svelte:head>
     <title>SnapSave Blog — Tips & Guides for Downloading Social Media Videos</title>
-    <meta name="description" content="Practical guides for saving videos from Instagram, TikTok, Pinterest, Facebook, Twitter, and Reddit. Free tips, no fluff." />
+    <meta name="description" content="Practical guides for saving videos from Instagram, TikTok, Pinterest, Facebook, Twitter, Reddit, Snapchat, Vimeo, SoundCloud, and more. Free tips, no fluff." />
     <meta property="og:title" content="SnapSave Blog — Video Download Guides" />
     <meta property="og:description" content="Practical guides for saving videos from Instagram, TikTok, Pinterest, Facebook, Twitter, and Reddit." />
     <meta property="og:image" content="https://snapssave.com/og-image.png" />
@@ -101,7 +177,10 @@
                 {#each posts as post}
                     <a href="/blog/{post.slug}" class="post-card" data-umami-event="blog-card-click" data-umami-event-slug={post.slug}>
                         <div class="post-card-top">
-                            <span class="post-tag" style="background: {tagColors[post.tag]}22; color: {tagColors[post.tag]}; border-color: {tagColors[post.tag]}44">{post.tag}</span>
+                            <span
+                                class="post-tag"
+                                style="background: {tagColors[post.tag]}22; color: {tagTextColors[post.tag] || tagColors[post.tag]}; border-color: {tagColors[post.tag]}44"
+                            >{post.tag}</span>
                             <span class="post-meta">{post.date} · {post.readTime}</span>
                         </div>
                         <h2 class="post-title">{post.title}</h2>
@@ -123,6 +202,14 @@
                         <a href="/pinterest-video-downloader" class="sidebar-link">Pinterest Video Downloader</a>
                         <a href="/reddit-video-downloader" class="sidebar-link">Reddit Video Downloader</a>
                         <a href="/snapchat-video-downloader" class="sidebar-link">Snapchat Video Downloader</a>
+                    </div>
+                </div>
+                <div class="sidebar-section" style="margin-top: 16px;">
+                    <h3 class="sidebar-heading">Troubleshooting</h3>
+                    <div class="sidebar-links">
+                        <a href="/blog/why-your-social-media-video-download-is-not-working" class="sidebar-link">Download not working?</a>
+                        <a href="/blog/how-to-copy-a-video-link" class="sidebar-link">How to copy a video link</a>
+                        <a href="/status" class="sidebar-link">Service status</a>
                     </div>
                 </div>
             </aside>
