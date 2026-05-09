@@ -44,8 +44,15 @@
     let isFocused = $state(false);
     let isDisabled = $state(false);
     let isLoading = $state(false);
-
     let isHovered = $state(false);
+    let pasteToast = $state(false);
+    let pasteToastTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const showPasteToast = () => {
+        if (pasteToastTimer) clearTimeout(pasteToastTimer);
+        pasteToast = true;
+        pasteToastTimer = setTimeout(() => { pasteToast = false; }, 1400);
+    };
 
     let isBotCheckOngoing = $derived($turnstileEnabled && !$turnstileSolved);
 
@@ -91,6 +98,7 @@
 
         if (linkMatch) {
             $link = linkMatch[0].split('，')[0];
+            showPasteToast();
 
             await tick(); // wait for button to render
             savingHandler({ url: $link });
@@ -221,6 +229,10 @@
             <span id="paste-mobile-text">{$t("save.paste.long")}</span>
         </ActionButton>
     </div>
+
+    {#if pasteToast}
+        <div id="paste-toast" role="status" aria-live="polite">Link detected ✓</div>
+    {/if}
 </div>
 
 <style>
@@ -366,5 +378,27 @@
         #paste-desktop-text {
             display: none;
         }
+    }
+
+    #paste-toast {
+        position: absolute;
+        bottom: calc(100% + 10px);
+        right: 0;
+        background: var(--button);
+        border: 1px solid rgba(59, 130, 246, 0.35);
+        color: var(--blue);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px 13px;
+        border-radius: 999px;
+        pointer-events: none;
+        white-space: nowrap;
+        animation: toast-in 0.18s ease;
+        z-index: 10;
+    }
+
+    @keyframes toast-in {
+        from { opacity: 0; transform: translateY(4px); }
+        to   { opacity: 1; transform: translateY(0); }
     }
 </style>

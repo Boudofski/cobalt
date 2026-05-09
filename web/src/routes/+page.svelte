@@ -39,6 +39,27 @@
         "Bluesky", "Loom", "Streamable", "VK",
     ];
 
+    const guides = [
+        {
+            slug: "how-to-download-tiktok-videos-without-installing-an-app",
+            title: "Download TikTok Videos Without Installing an App",
+            excerpt: "You don't need to install anything. Paste the link in your browser and download in seconds.",
+            tag: "TikTok",
+        },
+        {
+            slug: "how-to-save-instagram-reels-online",
+            title: "Save Instagram Reels Without an App",
+            excerpt: "Instagram removed the native Reels download button. Here's the simplest workaround.",
+            tag: "Instagram",
+        },
+        {
+            slug: "best-social-media-video-downloader-for-mobile",
+            title: "Best Video Downloader for Mobile in 2025",
+            excerpt: "What actually works on iPhone and Android — browser tools vs apps, compared.",
+            tag: "Guide",
+        },
+    ];
+
     const faqs = [
         {
             q: "Is SnapSave free to use?",
@@ -193,6 +214,32 @@
         </div>
     </section>
 
+    <!-- ═══════════════════════ LATEST GUIDES ═══════════════════════ -->
+    <section class="landing-section" id="guides-section">
+        <div class="section-inner">
+            <div class="section-label">From the blog</div>
+            <h2 class="section-title">Latest guides</h2>
+            <div id="guides-grid">
+                {#each guides as guide}
+                    <a
+                        href="/blog/{guide.slug}"
+                        class="guide-card"
+                        data-umami-event="homepage-guide-click"
+                        data-umami-event-slug={guide.slug}
+                    >
+                        <span class="guide-tag">{guide.tag}</span>
+                        <h3 class="guide-title">{guide.title}</h3>
+                        <p class="guide-excerpt">{guide.excerpt}</p>
+                        <span class="guide-read">Read guide →</span>
+                    </a>
+                {/each}
+            </div>
+            <a href="/blog" class="guides-all-link" data-umami-event="homepage-blog-all-click">
+                View all guides →
+            </a>
+        </div>
+    </section>
+
     <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
     <footer id="snapsave-footer">
         <div id="footer-inner">
@@ -203,9 +250,10 @@
             <nav id="footer-nav" aria-label="Footer navigation">
                 <a href="/">Home</a>
                 <a href="/blog">Blog</a>
+                <a href="/rss.xml" type="application/rss+xml">RSS</a>
                 <a href="/status">Status</a>
-                <a href="/about/privacy">Privacy Policy</a>
-                <a href="/about/terms">Terms of Use</a>
+                <a href="/about/privacy">Privacy</a>
+                <a href="/about/terms">Terms</a>
                 <a href="/about/dmca">DMCA</a>
                 <a href="/about/contact">Contact</a>
                 <a href="/about">About</a>
@@ -781,6 +829,90 @@
 
         #steps-grid {
             flex-direction: column;
+        }
+    }
+
+    /* ─── LATEST GUIDES ─── */
+    #guides-section {
+        background: var(--button);
+    }
+
+    #guides-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .guide-card {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px;
+        border-radius: var(--border-radius);
+        background: var(--primary);
+        border: 1px solid var(--button-stroke);
+        text-decoration: none;
+        transition: border-color 0.18s;
+    }
+
+    .guide-card:hover {
+        border-color: var(--blue);
+    }
+
+    .guide-tag {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--blue);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .guide-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--secondary);
+        margin: 0;
+        line-height: 1.4;
+        letter-spacing: -0.2px;
+    }
+
+    .guide-excerpt {
+        font-size: 13px;
+        color: var(--gray);
+        line-height: 1.65;
+        margin: 0;
+        flex: 1;
+    }
+
+    .guide-read {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--blue);
+        margin-top: 4px;
+    }
+
+    .guides-all-link {
+        margin-top: 20px;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--blue);
+        text-decoration: none;
+        padding: 9px 20px;
+        border-radius: var(--border-radius);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        transition: border-color 0.18s, background 0.18s;
+    }
+
+    .guides-all-link:hover {
+        border-color: var(--blue);
+        background: rgba(59, 130, 246, 0.06);
+    }
+
+    @media screen and (max-width: 660px) {
+        #guides-grid {
+            grid-template-columns: 1fr;
         }
     }
 </style>
