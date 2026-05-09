@@ -101,6 +101,7 @@
                 <a href="/facebook-video-downloader" class="lp-link">Facebook Video Downloader</a>
                 <a href="/pinterest-video-downloader" class="lp-link">Pinterest Video Downloader</a>
                 <a href="/reddit-video-downloader" class="lp-link">Reddit Video Downloader</a>
+                <a href="/blog/how-to-save-twitter-x-videos-in-hd" class="lp-link">How to Save Twitter/X Videos →</a>
             </div>
         </div>
     </section>

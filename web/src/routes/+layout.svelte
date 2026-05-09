@@ -49,10 +49,16 @@
         "/snapchat-video-downloader",
     ]);
 
-    afterNavigate(async () => {
+    afterNavigate(async ({ type }) => {
         const to_focus: HTMLElement | null =
             document.querySelector("[data-first-focus]");
         to_focus?.focus();
+
+        // Scroll content pane to top on route change (not on hash-only jumps)
+        if (type !== "hashchange") {
+            const content = document.getElementById("content");
+            content?.scrollTo({ top: 0, behavior: "instant" });
+        }
 
         if (downloaderRoutes.has($page.url.pathname)) {
             await getServerInfo();

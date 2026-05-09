@@ -12,6 +12,16 @@ import { createSavePipeline } from "$lib/task-manager/queue";
 
 import type { CobaltSaveRequestBody } from "$lib/types/api";
 
+declare global {
+    interface Window {
+        umami?: { track: (event: string, data?: Record<string, unknown>) => void };
+    }
+}
+
+const umamiTrack = (event: string, data?: Record<string, unknown>) => {
+    try { window.umami?.track(event, data); } catch { /* ignore if blocked */ }
+};
+
 type SavingHandlerArgs = {
     url?: string,
     request?: CobaltSaveRequestBody,
@@ -46,6 +56,10 @@ const deriveQuality = (req: CobaltSaveRequestBody): string => {
 
 export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerArgs) => {
     downloadButtonState.set("think");
+
+    umamiTrack("snapsave_download_submit", {
+        platform: detectPlatform(url || request?.url || ""),
+    });
 
     const error = (errorText: string) => {
         return createDialog({
@@ -120,6 +134,7 @@ export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerAr
 
     if (!response) {
         downloadButtonState.set("error");
+        umamiTrack("snapsave_download_error", { reason: "unreachable" });
         return error(get(t)("error.api.unreachable"));
     }
 
@@ -130,26 +145,42 @@ export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerAr
         let errorMsg = get(t)(errorCode, response?.error?.context)
             || get(t)("error.api.generic");
 
-        // Platform-specific hints for content/fetch failures
+        // Replace with user-friendly platform-specific messages for content/fetch failures
         const isDownloadFailure = /\.(content\.|fetch\.)/.test(errorCode);
         if (isDownloadFailure && selectedRequest?.url) {
             const platform = detectPlatform(selectedRequest.url);
-            if (platform === 'YouTube') {
-                errorMsg += "\n\nYouTube may temporarily block automated downloads. Try another public video or a lower quality setting.";
+            if (platform === 'Instagram') {
+                errorMsg = "This Instagram post may be private, expired, or unavailable.";
             } else if (platform === 'TikTok') {
-                errorMsg += "\n\nTikTok may temporarily block this request. Try again or use another public TikTok link.";
-            } else if (platform === 'Instagram') {
-                errorMsg += "\n\nInstagram requires server-side authentication cookies to download content. Ask the server admin to add Instagram cookies to the backend config.";
-            } else if (errorMsg && platform) {
-                errorMsg += "\n\nThis link may be private, unavailable, region-restricted, or temporarily blocked.";
+                errorMsg = "This TikTok link may be unavailable or temporarily blocked.";
+            } else if (platform === 'Pinterest') {
+                errorMsg = "This Pinterest video could not be prepared right now. Try opening the pin and copying the link again.";
+            } else if (platform === 'Facebook') {
+                errorMsg = "This Facebook video may be private or not publicly accessible.";
+            } else if (platform === 'X / Twitter') {
+                errorMsg = "This X/Twitter video could not be reached right now.";
+            } else if (platform === 'Reddit') {
+                errorMsg = "This Reddit video may be unavailable, removed, or missing audio.";
+            } else if (platform === 'Snapchat') {
+                errorMsg = "This Snapchat content could not be reached. Only public Spotlight links are supported.";
+            } else if (platform) {
+                errorMsg = "We couldn't process this public link right now. Please try again.";
             }
         }
 
+        umamiTrack("snapsave_download_error", {
+            platform: detectPlatform(selectedRequest?.url || ""),
+            code: errorCode,
+        });
         return error(errorMsg);
     }
 
     if (response.status === "redirect") {
         downloadButtonState.set("done");
+        umamiTrack("snapsave_download_success", {
+            platform: detectPlatform(selectedRequest.url),
+            type: "redirect",
+        });
 
         return createDialog({
             id: "saving",
@@ -170,6 +201,10 @@ export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerAr
 
         if (probeResult === 200) {
             downloadButtonState.set("done");
+            umamiTrack("snapsave_download_success", {
+                platform: detectPlatform(selectedRequest.url),
+                type: "tunnel",
+            });
 
             return createDialog({
                 id: "saving",

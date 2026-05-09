@@ -82,6 +82,13 @@
     <priority>0.5</priority>
   </url>
 
+  <!-- Status page -->
+  <url>
+    <loc>https://snapssave.com/status</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.4</priority>
+  </url>
+
   <!-- Blog index -->
   <url>
     <loc>https://snapssave.com/blog</loc>

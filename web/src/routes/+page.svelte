@@ -203,6 +203,7 @@
             <nav id="footer-nav" aria-label="Footer navigation">
                 <a href="/">Home</a>
                 <a href="/blog">Blog</a>
+                <a href="/status">Status</a>
                 <a href="/about/privacy">Privacy Policy</a>
                 <a href="/about/terms">Terms of Use</a>
                 <a href="/about/dmca">DMCA</a>

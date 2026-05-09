@@ -3,5 +3,6 @@ Allow: /
 Disallow: /youtube-shorts-downloader
 Disallow: /settings
 Disallow: /remux
+Disallow: /status
 
 Sitemap: https://snapssave.com/sitemap.xml
