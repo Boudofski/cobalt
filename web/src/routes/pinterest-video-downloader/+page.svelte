@@ -101,6 +101,7 @@
                 <a href="/twitter-video-downloader" class="lp-link">Twitter Video Downloader</a>
                 <a href="/reddit-video-downloader" class="lp-link">Reddit Video Downloader</a>
                 <a href="/snapchat-video-downloader" class="lp-link">Snapchat Video Downloader</a>
+                <a href="/blog/how-to-download-pinterest-videos-on-iphone" class="lp-link">How to Download Pinterest Videos →</a>
             </div>
         </div>
     </section>

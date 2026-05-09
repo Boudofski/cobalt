@@ -101,6 +101,7 @@
                 <a href="/twitter-video-downloader" class="lp-link">Twitter Video Downloader</a>
                 <a href="/pinterest-video-downloader" class="lp-link">Pinterest Video Downloader</a>
                 <a href="/reddit-video-downloader" class="lp-link">Reddit Video Downloader</a>
+                <a href="/blog/how-to-save-instagram-reels-online" class="lp-link">How to Save Instagram Reels →</a>
             </div>
         </div>
     </section>
