@@ -3,99 +3,68 @@
 
     import Omnibox from "$components/save/Omnibox.svelte";
     import SupportedServices from "$components/save/SupportedServices.svelte";
+    import PlatformIcons from "$components/icons/PlatformIcons.svelte";
 
-    // Hero strip — 8 key platforms as colored abbreviation chips
-    const platformStrip = [
-        { name: "Instagram",   abbr: "IG", color: "#E1306C" },
-        { name: "TikTok",      abbr: "TT", color: "#fe2c55" },
-        { name: "Facebook",    abbr: "FB", color: "#1877F2" },
-        { name: "X / Twitter", abbr: "X",  color: "#1d9bf0" },
-        { name: "Pinterest",   abbr: "PI", color: "#E60023" },
-        { name: "Reddit",      abbr: "RD", color: "#FF4500" },
-        { name: "Snapchat",    abbr: "SC", color: "#F7B731" },
-        { name: "Vimeo",       abbr: "VM", color: "#1AB7EA" },
+    // Hero platform strip — 8 real icons shown inline
+    const heroIcons = [
+        { key: 'instagram', name: 'Instagram',   bg: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)' },
+        { key: 'tiktok',    name: 'TikTok',      bg: '#010101' },
+        { key: 'facebook',  name: 'Facebook',    bg: '#1877F2' },
+        { key: 'twitter',   name: 'X / Twitter', bg: '#0f1419' },
+        { key: 'pinterest', name: 'Pinterest',   bg: '#E60023' },
+        { key: 'reddit',    name: 'Reddit',      bg: '#FF4500' },
+        { key: 'snapchat',  name: 'Snapchat',    bg: '#FFBC00' },
+        { key: 'vimeo',     name: 'Vimeo',       bg: '#1AB7EA' },
     ];
 
-    // Full platform showcase (16 tiles)
-    const platformTiles = [
-        { name: "Instagram",   abbr: "IG",  color: "#E1306C" },
-        { name: "TikTok",      abbr: "TT",  color: "#fe2c55" },
-        { name: "Facebook",    abbr: "FB",  color: "#1877F2" },
-        { name: "X / Twitter", abbr: "X",   color: "#1d9bf0" },
-        { name: "Pinterest",   abbr: "PI",  color: "#E60023" },
-        { name: "Reddit",      abbr: "RD",  color: "#FF4500" },
-        { name: "Snapchat",    abbr: "SC",  color: "#F7B731" },
-        { name: "Vimeo",       abbr: "VM",  color: "#1AB7EA" },
-        { name: "Twitch",      abbr: "TV",  color: "#9147FF" },
-        { name: "Bluesky",     abbr: "BS",  color: "#208BFE" },
-        { name: "SoundCloud",  abbr: "SN",  color: "#FF5500" },
-        { name: "Dailymotion", abbr: "DM",  color: "#0066DC" },
-        { name: "Streamable",  abbr: "ST",  color: "#3B82F6" },
-        { name: "Loom",        abbr: "LM",  color: "#7C3AED" },
-        { name: "Tumblr",      abbr: "TU",  color: "#6B7B8D" },
-        { name: "Bilibili",    abbr: "BL",  color: "#00A1D6" },
-    ];
-    // 16 tiles fills exactly 2 rows of 8 — no orphan tile
-
-    const stats = [
-        { value: "40+",  label: "Platforms",        desc: "Instagram, TikTok, Facebook, Twitter, Pinterest, Reddit, Snapchat, and dozens more." },
-        { value: "0",    label: "Signups required", desc: "Just paste a link and download. No account, no email, no tracking — ever." },
-        { value: "<5s",  label: "Avg. download",    desc: "Most requests complete in under five seconds at the best available quality." },
-        { value: "Free", label: "Always",           desc: "No subscription, no hidden fees. SnapSave will always be free to use." },
+    // Floating decorative cards around the hero (aria-hidden)
+    const floatCards = [
+        { key: 'instagram', name: 'Instagram',   bg: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', pos: 'top:14%;left:3%', rot: '-4deg' },
+        { key: 'tiktok',    name: 'TikTok',      bg: '#010101',   pos: 'top:22%;right:4%',   rot: '3deg'  },
+        { key: 'pinterest', name: 'Pinterest',   bg: '#E60023',   pos: 'bottom:36%;left:6%', rot: '5deg'  },
+        { key: 'reddit',    name: 'Reddit',      bg: '#FF4500',   pos: 'bottom:24%;right:7%',rot: '-3deg' },
+        { key: 'facebook',  name: 'Facebook',    bg: '#1877F2',   pos: 'top:10%;right:14%',  rot: '-6deg' },
+        { key: 'twitter',   name: 'X / Twitter', bg: '#0f1419',   pos: 'bottom:46%;right:3%',rot: '4deg'  },
     ];
 
-    const guides = [
-        {
-            slug: "how-to-download-pinterest-videos-on-iphone",
-            title: "Download Pinterest Videos on iPhone and Android",
-            excerpt: "No native save button? Here's the fastest way to save any public Pinterest video to your phone.",
-            tag: "Pinterest",
-            tagColor: "#E60023",
-            readTime: "4 min",
-        },
-        {
-            slug: "why-your-social-media-video-download-is-not-working",
-            title: "Why Your Video Download Is Not Working",
-            excerpt: "Private content, expired links, platform blocks — the full troubleshooting guide to fix it fast.",
-            tag: "Troubleshooting",
-            tagColor: "#F59E0B",
-            readTime: "6 min",
-        },
-        {
-            slug: "how-to-download-tiktok-videos-without-installing-an-app",
-            title: "Download TikTok Videos Without Installing an App",
-            excerpt: "You don't need to install anything. Paste the link in your browser and download in seconds.",
-            tag: "TikTok",
-            tagColor: "#fe2c55",
-            readTime: "4 min",
-        },
+    // Popular Downloads section — 6 platform cards with real icons
+    const popularDownloads = [
+        { key: 'instagram', name: 'Instagram Reels',   desc: 'Reels · Stories · Videos', href: '/instagram-reels-downloader',  bg: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', accent: '#E1306C' },
+        { key: 'tiktok',    name: 'TikTok Videos',     desc: 'Videos · Audio only',      href: '/tiktok-video-downloader',    bg: 'linear-gradient(135deg,#25F4EE,#FE2C55)',         accent: '#FE2C55' },
+        { key: 'pinterest', name: 'Pinterest Videos',  desc: 'Videos · Idea Pins',       href: '/pinterest-video-downloader', bg: 'linear-gradient(135deg,#E60023,#ad081b)',         accent: '#E60023' },
+        { key: 'facebook',  name: 'Facebook Reels',    desc: 'Reels · Videos',           href: '/facebook-video-downloader',  bg: 'linear-gradient(135deg,#1877F2,#0a52be)',         accent: '#1877F2' },
+        { key: 'twitter',   name: 'Twitter/X Videos',  desc: 'Videos · GIFs in HD',      href: '/twitter-video-downloader',   bg: 'linear-gradient(135deg,#1d9bf0,#0f1419)',         accent: '#1d9bf0' },
+        { key: 'reddit',    name: 'Reddit Videos',     desc: 'Videos + audio merged',    href: '/reddit-video-downloader',    bg: 'linear-gradient(135deg,#FF4500,#cc3700)',         accent: '#FF4500' },
     ];
 
     const faqs = [
-        {
-            q: "Is SnapSave free to use?",
-            a: "Yes, SnapSave is completely free. No subscription, no hidden fees, no credit card required.",
-        },
-        {
-            q: "Do I need to create an account?",
-            a: "No account needed. Just paste your link and download. We believe privacy means not collecting data in the first place.",
-        },
-        {
-            q: "What video quality can I download?",
-            a: "SnapSave fetches the best available quality for your link — up to 4K/8K where the platform supports it. You can also choose to download audio-only.",
-        },
-        {
-            q: "Why isn't my link downloading?",
-            a: "Some content is restricted (private accounts, region-locked, age-gated, or live streams). Make sure the content is publicly accessible and try again.",
-        },
-        {
-            q: "Is it legal to download videos?",
-            a: "Downloading for personal use is generally fine in most regions. Always respect creators’ rights and platform terms. Do not re-distribute content without permission.",
-        },
-        {
-            q: "Which platforms are supported?",
-            a: "Instagram, TikTok, Facebook, Twitter/X, Pinterest, Reddit, Snapchat, Vimeo, Twitch, SoundCloud, Dailymotion, and many more. Click “supported services” in the downloader to see the full list.",
-        },
+        { q: "Is SnapSave free to use?",
+          a: "Yes, completely free. No subscription, no hidden fees, no credit card required." },
+        { q: "Do I need to create an account?",
+          a: "No account needed. Just paste your link and download. We believe privacy means not collecting data in the first place." },
+        { q: "What video quality can I download?",
+          a: "SnapSave fetches the best available quality for your link — up to 4K/8K where the platform supports it. You can also choose to download audio-only." },
+        { q: "Why isn't my link downloading?",
+          a: "Some content is restricted (private accounts, region-locked, age-gated, or live streams). Make sure the content is publicly accessible and try again." },
+        { q: "Is it legal to download videos?",
+          a: "Downloading for personal use is generally fine in most regions. Always respect creators' rights and platform terms. Do not re-distribute content without permission." },
+        { q: "Which platforms are supported?",
+          a: "Instagram, TikTok, Facebook, Twitter/X, Pinterest, Reddit, Snapchat, Vimeo, Twitch, SoundCloud, Dailymotion, and many more. Click 'supported services' in the downloader to see the full list." },
+    ];
+
+    const guides = [
+        { slug: "how-to-download-pinterest-videos-on-iphone",
+          title: "Download Pinterest Videos on iPhone and Android",
+          excerpt: "No native save button? Here's the fastest way to save any public Pinterest video to your phone.",
+          tag: "Pinterest", tagColor: "#E60023", readTime: "4 min" },
+        { slug: "why-your-social-media-video-download-is-not-working",
+          title: "Why Your Video Download Is Not Working",
+          excerpt: "Private content, expired links, platform blocks — the full troubleshooting guide to fix it fast.",
+          tag: "Troubleshooting", tagColor: "#F59E0B", readTime: "6 min" },
+        { slug: "how-to-download-tiktok-videos-without-installing-an-app",
+          title: "Download TikTok Videos Without Installing an App",
+          excerpt: "You don't need to install anything. Paste the link in your browser and download in seconds.",
+          tag: "TikTok", tagColor: "#fe2c55", readTime: "4 min" },
     ];
 </script>
 
@@ -107,758 +76,851 @@
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is SnapSave free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes, SnapSave is completely free. No subscription, no hidden fees, no credit card required."}},{"@type":"Question","name":"Do I need to create an account?","acceptedAnswer":{"@type":"Answer","text":"No account needed. Just paste your link and download. We believe privacy means not collecting data in the first place."}},{"@type":"Question","name":"What video quality can I download?","acceptedAnswer":{"@type":"Answer","text":"SnapSave fetches the best available quality for your link. You can also choose to download audio-only."}},{"@type":"Question","name":"Why isn't my link downloading?","acceptedAnswer":{"@type":"Answer","text":"Some content is restricted (private accounts, region-locked, age-gated, or live streams). Make sure the content is publicly accessible and try again."}},{"@type":"Question","name":"Is it legal to download videos?","acceptedAnswer":{"@type":"Answer","text":"Downloading for personal use is generally fine in most regions. Always respect creators' rights and platform terms. Do not re-distribute content without permission."}},{"@type":"Question","name":"Which platforms are supported?","acceptedAnswer":{"@type":"Answer","text":"Instagram, TikTok, Facebook, Twitter/X, Pinterest, Reddit, Snapchat, Vimeo, Twitch, SoundCloud, Dailymotion, and many more."}}]}</script>
 </svelte:head>
 
-<div id="snapsave-page">
+<div id="sp">
 
-    <!-- ═══════════════════════════════════════════════════════ HERO -->
-    <section id="hero-section" aria-label="SnapSave video downloader">
+<!-- ══════════════════════════════════════════════════════════ HERO -->
+<section id="hero">
 
-        <!-- Decorative background layer -->
-        <div class="hero-bg" aria-hidden="true">
-            <div class="hero-dots"></div>
-            <div class="hero-glow hero-glow-blue"></div>
-            <div class="hero-glow hero-glow-purple"></div>
+    <!-- Layered dark background -->
+    <div class="hbg" aria-hidden="true">
+        <div class="hbg-noise"></div>
+        <div class="hbg-glow hbg-g1"></div>
+        <div class="hbg-glow hbg-g2"></div>
+        <div class="hbg-grid"></div>
+    </div>
+
+    <!-- Floating platform cards (decorative depth) -->
+    <div class="hfloats" aria-hidden="true">
+        {#each floatCards as fc, i}
+        <div class="hfc hfc-{i}" style="position:absolute;{fc.pos};transform:rotate({fc.rot})">
+            <span class="hfc-icon" style="background:{fc.bg}">
+                <PlatformIcons platform={fc.key} size={16} />
+            </span>
+            <span class="hfc-name">{fc.name}</span>
+        </div>
+        {/each}
+    </div>
+
+    <!-- Content -->
+    <div class="hero-body">
+
+        <!-- Brand -->
+        <div class="brand-row">
+            <div class="brand-icon" aria-hidden="true">
+                <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="28" height="28" rx="8" fill="url(#bi-g)"/>
+                    <path d="M14 5L11 13H7L14 22L21 13H17L14 5Z" fill="white"/>
+                    <defs>
+                        <linearGradient id="bi-g" x1="0" y1="0" x2="28" y2="28">
+                            <stop stop-color="#3B82F6"/>
+                            <stop offset="1" stop-color="#6366F1"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <span class="brand-name">SnapSave</span>
         </div>
 
-        <div id="hero-inner">
+        <!-- Headline -->
+        <h1 class="hero-h1">
+            Download any video<br>
+            <span class="h1-glow">from any platform</span>
+        </h1>
 
-            <!-- Eyebrow -->
-            <div class="hero-eyebrow">
-                <span class="eyebrow-pulse"></span>
-                Free &middot; No signup &middot; Works on mobile
+        <p class="hero-sub">
+            Paste a public link below. SnapSave detects the platform,
+            fetches the file, and delivers it to your device — in seconds.
+        </p>
+
+        <!-- Platform icon strip -->
+        <div class="hero-platforms" aria-label="Supported platforms preview">
+            {#each heroIcons as p}
+            <div class="hp-item" title={p.name}>
+                <span class="hp-icon" style="background:{p.bg}">
+                    <PlatformIcons platform={p.key} size={18} />
+                </span>
+                <span class="hp-label">{p.name}</span>
             </div>
-
-            <!-- Headline -->
-            <h1 id="hero-headline">
-                Download anything<br>from <span class="headline-accent">social media</span>
-            </h1>
-            <p id="hero-sub">
-                Paste a public link from any platform. Get the file in seconds.
-            </p>
-
-            <!-- Platform strip -->
-            <div class="platform-strip" aria-label="Supported platforms preview">
-                {#each platformStrip as p}
-                    <span
-                        class="pchip"
-                        style="--c: {p.color}"
-                        title={p.name}
-                    >{p.abbr}</span>
-                {/each}
-                <span class="pchip pchip-more" title="40+ platforms supported">+40</span>
-            </div>
-
-            <!-- Downloader app panel -->
-            <div id="hero-panel">
-                <div class="panel-chrome" aria-hidden="true">
-                    <div class="chrome-dots">
-                        <span class="cd-r"></span>
-                        <span class="cd-y"></span>
-                        <span class="cd-g"></span>
-                    </div>
-                    <span class="chrome-label">SnapSave — Video Downloader</span>
-                </div>
-                <div class="panel-body">
-                    <Omnibox />
-                    <div class="panel-services">
-                        <SupportedServices />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Trust row -->
-            <div id="hero-trust">
-                <span class="trust-item"><span class="trust-check">✓</span> No signup required</span>
-                <span class="trust-dot" aria-hidden="true"></span>
-                <span class="trust-item"><span class="trust-check">✓</span> Private by default</span>
-                <span class="trust-dot" aria-hidden="true"></span>
-                <span class="trust-item"><span class="trust-check">✓</span> Works on iPhone Safari</span>
-            </div>
-
+            {/each}
+            <span class="hp-more">+32 more</span>
         </div>
 
-        <div id="hero-terms">
-            {$t("save.terms.note.agreement")}
-            <a href="/about/terms">{$t("save.terms.note.link")}</a>
-        </div>
-    </section>
-
-    <!-- ═════════════════════════════════════════════ PLATFORM SHOWCASE -->
-    <section class="page-section" id="platforms-section">
-        <div class="section-inner">
-            <div class="section-eyebrow">Wide compatibility</div>
-            <h2 class="section-heading">Works with your<br>favourite platforms</h2>
-            <div id="platform-grid">
-                {#each platformTiles as p}
-                    <div class="ptile" style="--tc: {p.color}">
-                        <span class="ptile-abbr">{p.abbr}</span>
-                        <span class="ptile-name">{p.name}</span>
-                    </div>
-                {/each}
-            </div>
-            <p class="platforms-note">
-                Support does not imply affiliation or endorsement.
-                Use "supported services" in the downloader for the complete live list.
-            </p>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════ STATS / WHY -->
-    <section class="page-section" id="stats-section">
-        <div class="section-inner">
-            <div class="section-eyebrow">Why SnapSave</div>
-            <h2 class="section-heading">Everything you need,<br>nothing you don't</h2>
-            <div id="stats-grid">
-                {#each stats as s}
-                    <div class="stat-card">
-                        <span class="stat-value">{s.value}</span>
-                        <span class="stat-label">{s.label}</span>
-                        <p class="stat-desc">{s.desc}</p>
-                    </div>
-                {/each}
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════ HOW IT WORKS -->
-    <section class="page-section" id="how-section">
-        <div class="section-inner">
-            <div class="section-eyebrow">Simple by design</div>
-            <h2 class="section-heading">Download in three steps</h2>
-            <div id="steps-flow">
-                <div class="step-item">
-                    <span class="step-num" aria-hidden="true">01</span>
-                    <div class="step-body">
-                        <h3 class="step-title">Copy the link</h3>
-                        <p class="step-desc">Find a video on any supported platform. Tap Share → Copy Link, or copy the URL from your browser's address bar.</p>
-                    </div>
-                </div>
-                <div class="step-connector" aria-hidden="true">→</div>
-                <div class="step-item">
-                    <span class="step-num" aria-hidden="true">02</span>
-                    <div class="step-body">
-                        <h3 class="step-title">Paste into SnapSave</h3>
-                        <p class="step-desc">Open SnapSave and paste your link. The platform is detected automatically — no manual selection needed.</p>
-                    </div>
-                </div>
-                <div class="step-connector" aria-hidden="true">→</div>
-                <div class="step-item">
-                    <span class="step-num" aria-hidden="true">03</span>
-                    <div class="step-body">
-                        <h3 class="step-title">Download instantly</h3>
-                        <p class="step-desc">Hit the button. Your file saves to your device in seconds at the best available quality.</p>
-                    </div>
+        <!-- ─── THE DOWNLOADER ─────────────────────────────────── -->
+        <div id="downloader-wrap">
+            <div class="premium-command-panel">
+                <Omnibox />
+                <div class="dl-services">
+                    <SupportedServices />
                 </div>
             </div>
         </div>
-    </section>
+        <!-- ──────────────────────────────────────────────────────── -->
 
-    <!-- ════════════════════════════════════════════════════════ FAQ -->
-    <section class="page-section" id="faq-section">
-        <div class="section-inner">
-            <div class="section-eyebrow">Got questions?</div>
-            <h2 class="section-heading">Frequently asked</h2>
-            <div id="faq-list">
-                {#each faqs as faq}
-                    <details class="faq-item">
-                        <summary class="faq-q">
-                            <span>{faq.q}</span>
-                            <span class="faq-chevron" aria-hidden="true">+</span>
-                        </summary>
-                        <div class="faq-a">{faq.a}</div>
-                    </details>
-                {/each}
-            </div>
+        <div class="hero-trust" aria-label="Trust indicators">
+            <span class="ht-pill">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#22C55E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                No signup
+            </span>
+            <span class="ht-pill">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#22C55E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Private by default
+            </span>
+            <span class="ht-pill">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#22C55E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Works on iPhone Safari
+            </span>
         </div>
-    </section>
 
-    <!-- ══════════════════════════════════════════════ LATEST GUIDES -->
-    <section class="page-section" id="guides-section">
-        <div class="section-inner">
-            <div class="guides-header">
-                <div>
-                    <div class="section-eyebrow">From the blog</div>
-                    <h2 class="section-heading">Latest guides</h2>
+    </div>
+
+    <div class="hero-terms">
+        {$t("save.terms.note.agreement")}
+        <a href="/about/terms">{$t("save.terms.note.link")}</a>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════ POPULAR DOWNLOADS -->
+<section class="page-sec" id="popular-sec">
+    <div class="sec-in">
+        <div class="sec-label">Most downloaded</div>
+        <h2 class="sec-h2">Popular downloads</h2>
+        <p class="sec-sub">Go directly to a platform's dedicated downloader page.</p>
+
+        <div class="pop-grid">
+            {#each popularDownloads as dl}
+            <a href={dl.href} class="pop-card" style="--pa:{dl.accent}"
+               data-umami-event="homepage-popular-click" data-umami-event-platform={dl.name}>
+                <div class="pop-icon-col">
+                    <div class="pop-icon" style="background:{dl.bg}">
+                        <PlatformIcons platform={dl.key} size={28} />
+                    </div>
                 </div>
-                <a
-                    href="/blog"
-                    class="view-all-btn"
-                    data-umami-event="homepage-blog-all-click"
-                >View all guides →</a>
+                <div class="pop-text">
+                    <span class="pop-name">{dl.name}</span>
+                    <span class="pop-desc">{dl.desc}</span>
+                </div>
+                <svg class="pop-arrow" viewBox="0 0 20 20" fill="none">
+                    <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.6"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            {/each}
+        </div>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════ HOW IT WORKS -->
+<section class="page-sec page-sec-alt" id="how-sec">
+    <div class="sec-in">
+        <div class="sec-label">Simple by design</div>
+        <h2 class="sec-h2">Three steps to done</h2>
+        <div class="steps">
+            <div class="step-item">
+                <div class="step-n">01</div>
+                <div class="step-body">
+                    <h3>Copy the link</h3>
+                    <p>Find any video on any supported platform. Tap Share → Copy Link, or grab the URL from your browser.</p>
+                </div>
             </div>
-            <div id="guides-grid">
-                {#each guides as guide}
-                    <a
-                        href="/blog/{guide.slug}"
-                        class="guide-card"
-                        data-umami-event="homepage-guide-click"
-                        data-umami-event-slug={guide.slug}
-                    >
-                        <div class="guide-bar" style="background: {guide.tagColor}" aria-hidden="true"></div>
-                        <div class="guide-content">
-                            <div class="guide-meta-row">
-                                <span class="guide-tag" style="color: {guide.tagColor}">{guide.tag}</span>
-                                <span class="guide-time">{guide.readTime} read</span>
-                            </div>
-                            <h3 class="guide-title">{guide.title}</h3>
-                            <p class="guide-excerpt">{guide.excerpt}</p>
-                            <span class="guide-cta">Read guide →</span>
-                        </div>
-                    </a>
-                {/each}
+            <div class="step-conn" aria-hidden="true">
+                <svg viewBox="0 0 32 24" fill="none">
+                    <path d="M2 12h28M21 4l9 8-9 8" stroke="currentColor" stroke-width="1.6"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="step-item">
+                <div class="step-n">02</div>
+                <div class="step-body">
+                    <h3>Paste into SnapSave</h3>
+                    <p>Open SnapSave above and paste your link. The platform is detected automatically — no manual selection needed.</p>
+                </div>
+            </div>
+            <div class="step-conn" aria-hidden="true">
+                <svg viewBox="0 0 32 24" fill="none">
+                    <path d="M2 12h28M21 4l9 8-9 8" stroke="currentColor" stroke-width="1.6"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="step-item">
+                <div class="step-n">03</div>
+                <div class="step-body">
+                    <h3>Download instantly</h3>
+                    <p>Hit the download button. Your file saves to your device at the best available quality in seconds.</p>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- ═══════════════════════════════════════════════════ FOOTER -->
-    <footer id="snapsave-footer">
-        <div id="footer-grid">
 
-            <div class="footer-brand">
-                <span class="footer-logo">SnapSave</span>
-                <p class="footer-tagline">Download what you love.<br>Free, fast, and private.</p>
-                <p class="footer-disclaimer">
-                    Not affiliated with Instagram, TikTok, Meta, X Corp, Pinterest, Reddit,
-                    Snapchat, or any other platform. Only download public content you own or
-                    have permission to save.
-                </p>
-                <p class="footer-copy">© {new Date().getFullYear()} SnapSave. All rights reserved.</p>
-            </div>
-
-            <div class="footer-col">
-                <h4 class="footer-col-heading">Downloaders</h4>
-                <nav class="footer-links" aria-label="Downloader pages">
-                    <a href="/instagram-video-downloader">Instagram Video</a>
-                    <a href="/instagram-reels-downloader">Instagram Reels</a>
-                    <a href="/tiktok-video-downloader">TikTok Video</a>
-                    <a href="/facebook-video-downloader">Facebook Video</a>
-                    <a href="/twitter-video-downloader">Twitter Video</a>
-                    <a href="/pinterest-video-downloader">Pinterest Video</a>
-                    <a href="/reddit-video-downloader">Reddit Video</a>
-                    <a href="/snapchat-video-downloader">Snapchat Video</a>
-                </nav>
-            </div>
-
-            <div class="footer-col">
-                <h4 class="footer-col-heading">Product</h4>
-                <nav class="footer-links" aria-label="Product pages">
-                    <a href="/">Home</a>
-                    <a href="/blog">Blog</a>
-                    <a href="/rss.xml" type="application/rss+xml">RSS</a>
-                    <a href="/status">Status</a>
-                    <a href="/about">About</a>
-                </nav>
-            </div>
-
-            <div class="footer-col">
-                <h4 class="footer-col-heading">Legal</h4>
-                <nav class="footer-links" aria-label="Legal pages">
-                    <a href="/about/privacy">Privacy Policy</a>
-                    <a href="/about/terms">Terms of Use</a>
-                    <a href="/about/dmca">DMCA</a>
-                    <a href="/about/contact">Contact</a>
-                </nav>
-            </div>
-
+<!-- ══════════════════════════════════════════════════════════ FAQ -->
+<section class="page-sec" id="faq-sec">
+    <div class="sec-in sec-in-narrow">
+        <div class="sec-label">Questions</div>
+        <h2 class="sec-h2">Frequently asked</h2>
+        <div class="faq-list">
+            {#each faqs as faq}
+            <details class="faq-item">
+                <summary class="faq-q">
+                    <span>{faq.q}</span>
+                    <span class="faq-chev" aria-hidden="true">+</span>
+                </summary>
+                <p class="faq-a">{faq.a}</p>
+            </details>
+            {/each}
         </div>
-    </footer>
+    </div>
+</section>
 
-</div>
+
+<!-- ══════════════════════════════════════════════ LATEST GUIDES -->
+<section class="page-sec page-sec-alt" id="guides-sec">
+    <div class="sec-in">
+        <div class="guides-hdr">
+            <div>
+                <div class="sec-label">From the blog</div>
+                <h2 class="sec-h2">Latest guides</h2>
+            </div>
+            <a href="/blog" class="view-all-btn" data-umami-event="homepage-blog-all-click">
+                View all guides →
+            </a>
+        </div>
+
+        <div class="guides-grid">
+            {#each guides as g}
+            <a href="/blog/{g.slug}" class="gcard"
+               data-umami-event="homepage-guide-click" data-umami-event-slug={g.slug}>
+                <div class="gcard-bar" style="background:{g.tagColor}"></div>
+                <div class="gcard-body">
+                    <div class="gcard-meta">
+                        <span class="gcard-tag" style="color:{g.tagColor}">{g.tag}</span>
+                        <span class="gcard-time">{g.readTime} read</span>
+                    </div>
+                    <h3 class="gcard-title">{g.title}</h3>
+                    <p class="gcard-exc">{g.excerpt}</p>
+                    <span class="gcard-cta">Read guide →</span>
+                </div>
+            </a>
+            {/each}
+        </div>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════ FOOTER -->
+<footer id="sp-footer">
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="fb-logo">
+                <div class="fb-icon" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" fill="none">
+                        <rect width="20" height="20" rx="6" fill="url(#fb-g)"/>
+                        <path d="M10 3.5L8 9.5H4.5L10 18L15.5 9.5H12L10 3.5Z" fill="white"/>
+                        <defs><linearGradient id="fb-g" x1="0" y1="0" x2="20" y2="20">
+                            <stop stop-color="#3B82F6"/>
+                            <stop offset="1" stop-color="#6366F1"/>
+                        </linearGradient></defs>
+                    </svg>
+                </div>
+                <span class="fb-wordmark">SnapSave</span>
+            </div>
+            <p class="fb-tagline">Download what you love.<br>Free, fast, and private.</p>
+            <p class="fb-disclaimer">Not affiliated with Instagram, TikTok, Meta, X Corp, Pinterest, Reddit, or Snapchat. Only download public content you own or have permission to save.</p>
+            <p class="fb-copy">© {new Date().getFullYear()} SnapSave. All rights reserved.</p>
+        </div>
+
+        <div class="footer-col">
+            <h4 class="fc-heading">Downloaders</h4>
+            <nav class="fc-links" aria-label="Downloader pages">
+                <a href="/instagram-video-downloader">Instagram Video</a>
+                <a href="/instagram-reels-downloader">Instagram Reels</a>
+                <a href="/tiktok-video-downloader">TikTok Video</a>
+                <a href="/facebook-video-downloader">Facebook Video</a>
+                <a href="/twitter-video-downloader">Twitter Video</a>
+                <a href="/pinterest-video-downloader">Pinterest Video</a>
+                <a href="/reddit-video-downloader">Reddit Video</a>
+                <a href="/snapchat-video-downloader">Snapchat Video</a>
+            </nav>
+        </div>
+
+        <div class="footer-col">
+            <h4 class="fc-heading">Product</h4>
+            <nav class="fc-links" aria-label="Product pages">
+                <a href="/">Home</a>
+                <a href="/blog">Blog</a>
+                <a href="/rss.xml" type="application/rss+xml">RSS</a>
+                <a href="/status">Status</a>
+                <a href="/about">About</a>
+            </nav>
+        </div>
+
+        <div class="footer-col">
+            <h4 class="fc-heading">Legal</h4>
+            <nav class="fc-links" aria-label="Legal pages">
+                <a href="/about/privacy">Privacy Policy</a>
+                <a href="/about/terms">Terms of Use</a>
+                <a href="/about/dmca">DMCA</a>
+                <a href="/about/contact">Contact</a>
+            </nav>
+        </div>
+    </div>
+</footer>
+
+</div><!-- #sp -->
 
 <style>
-/* ═══════════════════════════════════════════ PAGE WRAPPER */
-#snapsave-page {
+/* ════════════════════════════════════════════ ROOT */
+#sp {
     display: flex;
     flex-direction: column;
     width: 100%;
     min-height: 100%;
+    --hero-dark: #030307;
+    --surface: rgba(255,255,255,0.02);
+    --surface-hover: rgba(255,255,255,0.05);
+    --border: rgba(255,255,255,0.06);
+    --border-bright: rgba(255,255,255,0.12);
+    --text: #F8FAFC;
+    --muted: #94A3B8;
+    --blue: #38BDF8;
+    --green: #34D399;
 }
 
-/* ═══════════════════════════════════════════════════ HERO */
-
-/*
- * Force dark palette inside the hero regardless of the user's theme.
- * Every CSS variable referenced by Omnibox, SupportedServices, and
- * decorative elements is overridden here so both light and dark mode
- * users see the same premium dark panel.
- */
-#hero-section {
-    --secondary:                  #F9FAFB;
-    --gray:                       #9CA3AF;
-    --blue:                       #3B82F6;
-    --button:                     rgba(255,255,255,0.06);
-    --button-hover:               rgba(255,255,255,0.10);
-    --button-press:               rgba(255,255,255,0.14);
-    --button-text:                #F9FAFB;
-    --button-stroke:              rgba(255,255,255,0.10);
-    --button-box-shadow:          0 0 0 1px rgba(255,255,255,0.10) inset;
-    --button-elevated:            rgba(255,255,255,0.08);
-    --button-elevated-hover:      rgba(255,255,255,0.13);
-    --button-elevated-press:      rgba(255,255,255,0.18);
-    --button-elevated-shimmer:    rgba(255,255,255,0.11);
-    --button-hover-transparent:   rgba(255,255,255,0.07);
-    --button-press-transparent:   rgba(255,255,255,0.11);
-    --button-active-hover:        #F9FAFB;
-    --input-border:               rgba(255,255,255,0.22);
-    --sidebar-highlight:          #3B82F6;
-    --toggle-bg:                  rgba(255,255,255,0.2);
-    --toggle-bg-enabled:          #3B82F6;
-    --popover-glow:               rgba(59,130,246,0.2);
-    --popup-bg:                   #111827;
-    --popup-stroke:               rgba(255,255,255,0.08);
-
+/* ════════════════════════════════════════════ HERO */
+#hero {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     min-height: 100vh;
-    padding: 64px var(--padding) 32px;
-    background: #080C14;
-    color: #F9FAFB;
+    padding: 80px var(--padding) 36px;
+    background: var(--hero-dark);
+    color: var(--text);
     overflow: hidden;
+
+    /* Force dark CSS vars so Omnibox + SupportedServices look correct */
+    --primary:                 var(--hero-dark);
+    --secondary:               #F8FAFC;
+    --gray:                    #94A3B8;
+    --button:                  rgba(255,255,255,0.03);
+    --button-hover:            rgba(255,255,255,0.07);
+    --button-press:            rgba(255,255,255,0.11);
+    --button-text:             #F8FAFC;
+    --button-stroke:           rgba(255,255,255,0.06);
+    --button-box-shadow:       0 0 0 1px rgba(255,255,255,0.06) inset;
+    --button-elevated:         rgba(255,255,255,0.05);
+    --button-elevated-hover:   rgba(255,255,255,0.09);
+    --button-elevated-press:   rgba(255,255,255,0.14);
+    --button-elevated-shimmer: rgba(255,255,255,0.08);
+    --button-hover-transparent:rgba(255,255,255,0.04);
+    --button-press-transparent:rgba(255,255,255,0.08);
+    --button-active-hover:     #F8FAFC;
+    --input-border:            rgba(255,255,255,0.12);
+    --sidebar-highlight:       #38BDF8;
+    --popup-bg:                #09090E;
+    --popup-stroke:            rgba(255,255,255,0.06);
+    --content-border:          rgba(255,255,255,0.04);
+    --border-radius:           16px;
 }
 
-/* Decorative dot grid */
-.hero-bg { position: absolute; inset: 0; pointer-events: none; }
+:global([data-theme="light"]) #hero {
+    background: #F8FAFC;
+    color: #0F172A;
+    --primary:                 #F8FAFC;
+    --secondary:               #0F172A;
+    --gray:                    #64748B;
+    --button:                  rgba(15, 23, 42, 0.04);
+    --button-hover:            rgba(15, 23, 42, 0.07);
+    --button-press:            rgba(15, 23, 42, 0.12);
+    --button-text:             #0F172A;
+    --button-stroke:           rgba(15, 23, 42, 0.06);
+    --button-box-shadow:       0 0 0 1px rgba(15, 23, 42, 0.06) inset;
+    --button-elevated:         rgba(15, 23, 42, 0.06);
+    --button-elevated-hover:   rgba(15, 23, 42, 0.09);
+    --button-elevated-press:   rgba(15, 23, 42, 0.14);
+    --button-elevated-shimmer: rgba(15, 23, 42, 0.05);
+    --button-hover-transparent:rgba(15, 23, 42, 0.04);
+    --button-press-transparent:rgba(15, 23, 42, 0.08);
+    --button-active-hover:     #0F172A;
+    --input-border:            rgba(15, 23, 42, 0.15);
+    --sidebar-highlight:       #0284C7;
+    --popup-bg:                #FFFFFF;
+    --popup-stroke:            rgba(15, 23, 42, 0.08);
+    --content-border:          rgba(15, 23, 42, 0.04);
+}
 
-.hero-dots {
+/* Background layers */
+.hbg {
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(rgba(255,255,255,0.065) 1px, transparent 1px);
-    background-size: 28px 28px;
-    mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, rgba(0,0,0,0.6) 0%, transparent 100%);
-    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, rgba(0,0,0,0.6) 0%, transparent 100%);
+    pointer-events: none;
 }
 
-.hero-glow {
+/* Subtle CSS noise texture using repeating gradients */
+.hbg-noise {
+    position: absolute;
+    inset: 0;
+    background-image:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.35;
+}
+
+/* Grid lines */
+.hbg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 30%, rgba(0,0,0,0.5) 0%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 30%, rgba(0,0,0,0.5) 0%, transparent 100%);
+}
+
+.hbg-glow {
     position: absolute;
     border-radius: 50%;
-    pointer-events: none;
     filter: blur(80px);
 }
 
-.hero-glow-blue {
-    width: 700px;
-    height: 500px;
-    background: radial-gradient(ellipse, rgba(59,130,246,0.22) 0%, transparent 65%);
-    top: -80px;
+.hbg-g1 {
+    width: 800px;
+    height: 600px;
+    background: radial-gradient(ellipse, rgba(59,130,246,0.2) 0%, transparent 65%);
+    top: -120px;
     left: 50%;
     transform: translateX(-50%);
 }
 
-.hero-glow-purple {
-    width: 400px;
+.hbg-g2 {
+    width: 500px;
     height: 400px;
-    background: radial-gradient(ellipse, rgba(129,140,248,0.12) 0%, transparent 65%);
-    bottom: -60px;
-    right: 5%;
+    background: radial-gradient(ellipse, rgba(99,102,241,0.12) 0%, transparent 65%);
+    bottom: 0;
+    right: 8%;
 }
 
-/* Hero inner content */
-#hero-inner {
+/* Floating platform cards */
+.hfloats {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.hfc {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 14px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: rgba(255,255,255,0.65);
+    font-size: 12.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0.55;
+}
+
+.hfc-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Main hero content */
+.hero-body {
     position: relative;
     z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 22px;
     width: 100%;
     max-width: 720px;
     text-align: center;
+    flex: 1;
+    justify-content: center;
 }
 
-/* Eyebrow */
-.hero-eyebrow {
+/* Brand mark */
+.brand-row {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 16px;
+    gap: 10px;
+    padding: 8px 18px 8px 10px;
     border-radius: 999px;
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.1);
-    font-size: 11.5px;
-    font-weight: 500;
-    color: rgba(255,255,255,0.55);
-    letter-spacing: 0.3px;
 }
 
-.eyebrow-pulse {
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #3B82F6;
-    box-shadow: 0 0 0 0 rgba(59,130,246,0.6);
-    animation: epulse 2.4s ease-in-out infinite;
+.brand-icon {
+    width: 28px;
+    height: 28px;
     flex-shrink: 0;
 }
 
-@keyframes epulse {
-    0%   { box-shadow: 0 0 0 0 rgba(59,130,246,0.6); }
-    60%  { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
-    100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+.brand-icon svg { display: block; width: 28px; height: 28px; }
+
+.brand-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: rgba(255,255,255,0.85);
+}
+
+:global([data-theme="light"]) .brand-name {
+    color: rgba(15, 23, 42, 0.85);
 }
 
 /* Headline */
-#hero-headline {
-    font-size: clamp(34px, 5.5vw, 62px);
+.hero-h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(38px, 6vw, 68px);
     font-weight: 800;
-    line-height: 1.08;
-    letter-spacing: -2.5px;
-    color: #F9FAFB;
+    line-height: 1.05;
+    letter-spacing: -3px;
+    color: #F8FAFC;
     margin: 0;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-feature-settings: "cv02","cv03","cv04","cv11";
 }
 
-.headline-accent {
-    background: linear-gradient(130deg, #3B82F6 25%, #818CF8 75%);
+:global([data-theme="light"]) .hero-h1 {
+    color: #0F172A;
+}
+
+.h1-glow {
+    background: linear-gradient(120deg, #38BDF8 0%, #818CF8 55%, #C084FC 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
-#hero-sub {
+.hero-sub {
     font-size: 17px;
-    color: rgba(255,255,255,0.62);
+    color: rgba(255,255,255,0.5);
     line-height: 1.65;
     margin: 0;
+    max-width: 520px;
     font-weight: 400;
-    max-width: 460px;
 }
 
-/* Platform strip */
-.platform-strip {
+:global([data-theme="light"]) .hero-sub {
+    color: rgba(15, 23, 42, 0.6);
+}
+
+/* Platform icon strip */
+.hero-platforms {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 7px;
+    gap: 10px;
     margin-top: -4px;
 }
 
-.pchip {
+.hp-item {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    background: var(--button);        /* fallback */
-    background: color-mix(in srgb, var(--c) 14%, rgba(255,255,255,0.05));
-    border: 1px solid color-mix(in srgb, var(--c) 28%, rgba(255,255,255,0.08));
-    font-size: 10.5px;
-    font-weight: 800;
-    letter-spacing: 0.2px;
-    color: var(--c);
-    transition: transform 0.12s, box-shadow 0.12s;
-    cursor: default;
+    gap: 7px;
+    padding: 5px 12px 5px 5px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.09);
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    transition: background 0.15s, border-color 0.15s;
 }
 
 @media (hover: hover) {
-    .pchip:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px color-mix(in srgb, var(--c) 35%, transparent);
+    .hp-item:hover {
+        background: rgba(255,255,255,0.1);
+        border-color: rgba(255,255,255,0.15);
     }
 }
 
-.pchip-more {
-    --c: #9CA3AF;
-    font-size: 10px;
-    letter-spacing: 0;
-    color: rgba(255,255,255,0.35);
-    border-color: rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.04);
-}
-
-/* App panel (downloader wrapper) */
-#hero-panel {
-    width: 100%;
-    max-width: 660px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    box-shadow:
-        0 0 0 1px rgba(255,255,255,0.04) inset,
-        0 32px 80px rgba(0,0,0,0.5),
-        0 0 120px rgba(59,130,246,0.07);
-    /* No overflow:hidden — lets SupportedServices popover escape the panel */
-}
-
-.panel-chrome {
+.hp-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-    background: rgba(255,255,255,0.02);
-    /* Round top corners explicitly so they match panel without overflow:hidden */
-    border-radius: 20px 20px 0 0;
-}
-
-.chrome-dots {
-    display: flex;
-    gap: 6px;
-    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
 }
 
-.cd-r, .cd-y, .cd-g {
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    opacity: 0.85;
-}
-.cd-r { background: #FF5F57; }
-.cd-y { background: #FEBC2E; }
-.cd-g { background: #28C840; }
+.hp-label { white-space: nowrap; }
 
-.chrome-label {
+.hp-more {
     font-size: 11.5px;
-    font-weight: 500;
     color: rgba(255,255,255,0.3);
-    letter-spacing: 0.3px;
-    flex: 1;
-    text-align: center;
+    font-weight: 500;
+    padding: 0 6px;
 }
 
-.panel-body {
-    padding: 16px 16px 12px;
+/* ─── Downloader panel ─────────────────────────────────────── */
+#downloader-wrap {
+    width: 100%;
+    max-width: 660px;
+}
+
+.premium-command-panel {
+    background: rgba(10, 10, 16, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(56, 189, 248, 0.08);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+:global([data-theme="light"]) .premium-command-panel {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow:
+        0 24px 64px rgba(15, 23, 42, 0.08),
+        0 0 80px rgba(2, 132, 199, 0.04);
+}
+
+.dl-services {
+    margin-top: 10px;
     display: flex;
-    flex-direction: column;
-    gap: 0;
+    justify-content: center;
 }
 
-.panel-services {
-    display: flex;
-    justify-content: flex-start;
-    margin-top: 6px;
-}
-
-/* Trust row */
-#hero-trust {
+/* ─── Trust pills ─────────────────────────────────────────── */
+#hero-trust, .hero-trust {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 10px 16px;
+    gap: 8px;
     margin-top: -4px;
 }
 
-.trust-item {
+.ht-pill {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     font-size: 12px;
-    color: rgba(255,255,255,0.55);
     font-weight: 500;
+    color: rgba(255,255,255,0.45);
+    padding: 5px 12px 5px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
 }
 
-.trust-check {
-    color: #3B82F6;
-    font-size: 11px;
-    font-weight: 800;
-}
-
-.trust-dot {
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    flex-shrink: 0;
-}
+.ht-pill svg { width: 16px; height: 16px; flex-shrink: 0; }
 
 /* Terms */
-#hero-terms {
+.hero-terms {
     position: relative;
     z-index: 1;
-    margin-top: 20px;
+    margin-top: 16px;
     font-size: 11.5px;
-    color: rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.22);
     text-align: center;
-    padding-bottom: 8px;
 }
 
-#hero-terms a {
-    color: rgba(59,130,246,0.8);
-    text-decoration: underline;
-    text-underline-offset: 2px;
-}
+.hero-terms a { color: rgba(59,130,246,0.75); text-decoration: underline; }
 
-/* ═══════════════════════════════════════ SHARED SECTION STYLES */
-.page-section {
+/* ════════════════════════════════════════ SHARED SECTION STYLES */
+.page-sec {
     padding: 96px var(--padding);
     display: flex;
     justify-content: center;
     border-top: 1px solid var(--content-border);
 }
 
-.section-inner {
+#popular-sec {
+    background: #06060c;
+}
+:global([data-theme="light"]) #popular-sec {
+    background: #ffffff;
+}
+
+#how-sec {
+    background: #030307;
+}
+:global([data-theme="light"]) #how-sec {
+    background: #f8fafc;
+}
+
+#faq-sec {
+    background: #06060c;
+}
+:global([data-theme="light"]) #faq-sec {
+    background: #ffffff;
+}
+
+#guides-sec {
+    background: #030307;
+}
+:global([data-theme="light"]) #guides-sec {
+    background: #f8fafc;
+}
+
+.sec-in {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 16px;
     width: 100%;
-    max-width: 900px;
+    max-width: 920px;
     text-align: center;
 }
 
-.section-eyebrow {
+.sec-in-narrow { max-width: 680px; }
+
+.sec-label {
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 1.4px;
     text-transform: uppercase;
     color: var(--blue);
-    opacity: 0.8;
+    opacity: 0.85;
 }
 
-.section-heading {
-    font-size: clamp(26px, 3.5vw, 40px);
-    font-weight: 800;
-    letter-spacing: -1.3px;
-    color: var(--secondary);
-    line-height: 1.15;
-    margin: 0;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-}
-
-/* ═══════════════════════════════════ PLATFORM SHOWCASE SECTION */
-#platform-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 12px;
-    width: 100%;
-    margin-top: 32px;
-}
-
-.ptile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 18px 10px 16px;
-    border-radius: 14px;
-    aspect-ratio: 1;
-    background: var(--button);              /* fallback */
-    background: color-mix(in srgb, var(--tc) 8%, var(--button));
-    border: 1px solid var(--button-stroke); /* fallback */
-    border: 1px solid color-mix(in srgb, var(--tc) 20%, var(--button-stroke));
-    transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
-    cursor: default;
-}
-
-@media (hover: hover) {
-    .ptile:hover {
-        border-color: color-mix(in srgb, var(--tc) 50%, transparent);
-        box-shadow: 0 4px 16px color-mix(in srgb, var(--tc) 15%, transparent);
-        transform: translateY(-2px);
-    }
-}
-
-.ptile-abbr {
-    font-size: 15px;
-    font-weight: 900;
-    color: var(--tc);
-    letter-spacing: -0.5px;
-    line-height: 1;
-}
-
-.ptile-name {
-    font-size: 9px;
-    font-weight: 600;
-    color: var(--gray);
-    letter-spacing: 0.2px;
-    line-height: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-}
-
-.ptile-overflow {
-    --tc: var(--blue);
-    background: color-mix(in srgb, var(--blue) 6%, var(--button));
-    border: 1px solid color-mix(in srgb, var(--blue) 15%, var(--button-stroke));
-}
-
-.ptile-overflow .ptile-abbr {
-    font-size: 20px;
-    opacity: 0.6;
-}
-
-.platforms-note {
-    font-size: 12px;
-    color: var(--gray);
-    opacity: 0.7;
-    line-height: 1.65;
-    max-width: 520px;
-    margin-top: 8px;
-}
-
-/* ═════════════════════════════════════════════ STATS SECTION */
-#stats-section {
-    background: var(--button);
-}
-
-#stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    width: 100%;
-    margin-top: 36px;
-}
-
-.stat-card {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    padding: 28px 24px 26px;
-    border-radius: 18px;
-    background: var(--primary);
-    border: 1px solid var(--button-stroke);
-    text-align: left;
-    transition: border-color 0.18s, box-shadow 0.18s;
-}
-
-@media (hover: hover) {
-    .stat-card:hover {
-        border-color: rgba(59,130,246,0.3);
-        box-shadow: 0 8px 24px rgba(59,130,246,0.06);
-    }
-}
-
-.stat-value {
-    font-size: 40px;
+.sec-h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(28px, 4vw, 44px);
     font-weight: 800;
     letter-spacing: -2px;
-    color: var(--blue);
-    line-height: 1;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
+    color: var(--secondary);
+    line-height: 1.1;
+    margin: 0;
+    font-feature-settings: "cv02","cv03","cv04","cv11";
 }
 
-.stat-label {
-    font-size: 13px;
+.sec-sub {
+    font-size: 15px;
+    color: var(--gray);
+    margin: 0;
+    line-height: 1.65;
+}
+
+/* ════════════════════════════════════ POPULAR DOWNLOADS SECTION */
+.pop-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    width: 100%;
+    margin-top: 24px;
+}
+
+.pop-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    text-decoration: none;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s, background-color 0.25s;
+    position: relative;
+    overflow: hidden;
+}
+
+:global([data-theme="light"]) .pop-card {
+    background: rgba(15, 23, 42, 0.02);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+@media (hover: hover) {
+    .pop-card:hover {
+        border-color: color-mix(in srgb, var(--pa) 50%, transparent);
+        box-shadow: 
+            0 12px 30px rgba(0, 0, 0, 0.3),
+            0 0 20px color-mix(in srgb, var(--pa) 12%, transparent);
+        transform: translateY(-3px);
+        background: rgba(255, 255, 255, 0.04);
+    }
+    
+    :global([data-theme="light"]) .pop-card:hover {
+        border-color: color-mix(in srgb, var(--pa) 50%, transparent);
+        box-shadow: 
+            0 12px 30px rgba(15, 23, 42, 0.04),
+            0 0 20px color-mix(in srgb, var(--pa) 8%, transparent);
+        background: rgba(15, 23, 42, 0.04);
+    }
+}
+
+.pop-icon-col { flex-shrink: 0; }
+
+.pop-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.pop-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    text-align: left;
+    min-width: 0;
+}
+
+.pop-name {
+    font-size: 14px;
     font-weight: 700;
     color: var(--secondary);
     letter-spacing: -0.2px;
-    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.stat-desc {
-    font-size: 13px;
+.pop-desc {
+    font-size: 12px;
     color: var(--gray);
-    line-height: 1.65;
-    margin: 6px 0 0;
-    font-weight: 400;
+    line-height: 1.4;
+}
+
+.pop-arrow {
+    width: 20px;
+    height: 20px;
+    color: var(--gray);
+    flex-shrink: 0;
+    transition: color 0.15s, transform 0.15s;
+}
+
+@media (hover: hover) {
+    .pop-card:hover .pop-arrow {
+        color: var(--pa);
+        transform: translateX(3px);
+    }
 }
 
 /* ════════════════════════════════════════ HOW IT WORKS SECTION */
-#steps-flow {
+.steps {
     display: flex;
     align-items: flex-start;
     width: 100%;
-    margin-top: 48px;
+    margin-top: 40px;
     gap: 0;
 }
 
@@ -866,63 +928,58 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    gap: 14px;
     text-align: left;
-    padding: 0 28px 0 0;
+    padding-right: 24px;
 }
 
-.step-num {
-    font-size: 52px;
+.step-n {
+    font-size: 54px;
     font-weight: 900;
     letter-spacing: -3px;
     line-height: 1;
-    background: linear-gradient(130deg, var(--blue) 0%, color-mix(in srgb, var(--blue) 40%, transparent) 100%);
+    background: linear-gradient(130deg, var(--blue) 0%, color-mix(in srgb, var(--blue) 30%, transparent) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
-    margin-bottom: -4px;
+    font-feature-settings: "tnum";
 }
 
-.step-connector {
-    font-size: 22px;
-    color: var(--button-elevated);
-    flex-shrink: 0;
-    align-self: center;
-    margin: 0 8px;
-    padding-bottom: 16px;
-    opacity: 0.7;
-}
-
-.step-title {
+.step-body h3 {
     font-size: 16px;
     font-weight: 700;
     color: var(--secondary);
-    margin: 0;
-    letter-spacing: -0.3px;
+    margin: 0 0 8px;
+    letter-spacing: -0.2px;
 }
 
-.step-desc {
+.step-body p {
     font-size: 13.5px;
     color: var(--gray);
-    line-height: 1.68;
+    line-height: 1.65;
     margin: 0;
-    font-weight: 400;
 }
 
-/* ═══════════════════════════════════════════════ FAQ SECTION */
-#faq-section {
-    background: var(--button);
+.step-conn {
+    flex-shrink: 0;
+    width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    color: var(--button-elevated);
+    padding-bottom: 20px;
 }
 
-#faq-list {
+.step-conn svg { width: 32px; height: 24px; }
+
+/* ════════════════════════════════════════════════ FAQ SECTION */
+.faq-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
     width: 100%;
-    max-width: 720px;
-    margin-top: 28px;
+    margin-top: 24px;
     text-align: left;
 }
 
@@ -934,16 +991,17 @@
     transition: border-color 0.2s;
 }
 
-.faq-item[open] {
-    border-color: rgba(59,130,246,0.4);
-}
+[data-theme="dark"] .faq-item,
+.page-sec-alt .faq-item { background: var(--popup-bg, #111827); }
+
+.faq-item[open] { border-color: rgba(59,130,246,0.4); }
 
 .faq-q {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 17px 22px;
+    padding: 16px 20px;
     font-size: 14.5px;
     font-weight: 600;
     color: var(--secondary);
@@ -953,10 +1011,9 @@
 }
 
 .faq-q::-webkit-details-marker { display: none; }
-
 @media (hover: hover) { .faq-q:hover { color: var(--blue); } }
 
-.faq-chevron {
+.faq-chev {
     font-size: 20px;
     font-weight: 300;
     color: var(--gray);
@@ -965,34 +1022,27 @@
     line-height: 1;
 }
 
-.faq-item[open] .faq-chevron {
-    transform: rotate(45deg);
-    color: var(--blue);
-}
+.faq-item[open] .faq-chev { transform: rotate(45deg); color: var(--blue); }
 
 .faq-a {
-    padding: 14px 22px 18px;
+    padding: 12px 20px 18px;
     font-size: 13.5px;
     color: var(--gray);
     line-height: 1.75;
-    font-weight: 400;
+    margin: 0;
     border-top: 1px solid var(--button-stroke);
 }
 
-/* ══════════════════════════════════════════ GUIDES SECTION */
-#guides-section {
-    padding-bottom: 80px;
-}
-
-.guides-header {
+/* ════════════════════════════════════════════ GUIDES SECTION */
+.guides-hdr {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 20px;
     width: 100%;
+    gap: 20px;
 }
 
-.guides-header > div {
+.guides-hdr > div {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -1009,18 +1059,16 @@
     color: var(--blue);
     text-decoration: none;
     white-space: nowrap;
-    transition: border-color 0.15s, background 0.15s;
     flex-shrink: 0;
+    align-self: center;
+    transition: border-color 0.15s, background 0.15s;
 }
 
 @media (hover: hover) {
-    .view-all-btn:hover {
-        border-color: var(--blue);
-        background: rgba(59,130,246,0.05);
-    }
+    .view-all-btn:hover { border-color: var(--blue); background: rgba(59,130,246,0.05); }
 }
 
-#guides-grid {
+.guides-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
@@ -1028,7 +1076,7 @@
     margin-top: 8px;
 }
 
-.guide-card {
+.gcard {
     display: flex;
     flex-direction: column;
     border-radius: 18px;
@@ -1040,49 +1088,35 @@
 }
 
 @media (hover: hover) {
-    .guide-card:hover {
+    .gcard:hover {
         border-color: rgba(59,130,246,0.35);
         box-shadow: 0 10px 32px rgba(59,130,246,0.08);
         transform: translateY(-3px);
     }
 }
 
-.guide-bar {
-    height: 3px;
-    width: 100%;
-    flex-shrink: 0;
-    opacity: 0.9;
-}
+.gcard-bar { height: 3px; width: 100%; flex-shrink: 0; }
 
-.guide-content {
+.gcard-body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding: 20px 22px 22px;
+    padding: 18px 20px 20px;
     flex: 1;
     text-align: left;
 }
 
-.guide-meta-row {
+.gcard-meta {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
 }
 
-.guide-tag {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+.gcard-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.gcard-time { font-size: 11.5px; color: var(--gray); }
 
-.guide-time {
-    font-size: 11.5px;
-    color: var(--gray);
-}
-
-.guide-title {
+.gcard-title {
     font-size: 15px;
     font-weight: 700;
     color: var(--secondary);
@@ -1091,7 +1125,7 @@
     letter-spacing: -0.2px;
 }
 
-.guide-excerpt {
+.gcard-exc {
     font-size: 13px;
     color: var(--gray);
     line-height: 1.68;
@@ -1099,20 +1133,15 @@
     flex: 1;
 }
 
-.guide-cta {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--blue);
-    margin-top: 4px;
-}
+.gcard-cta { font-size: 12.5px; font-weight: 600; color: var(--blue); margin-top: 4px; }
 
-/* ═════════════════════════════════════════════════ FOOTER */
-#snapsave-footer {
+/* ════════════════════════════════════════════════════ FOOTER */
+#sp-footer {
     border-top: 1px solid var(--content-border);
     padding: 64px var(--padding) 52px;
 }
 
-#footer-grid {
+.footer-grid {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr;
     gap: 32px 48px;
@@ -1120,54 +1149,43 @@
     margin: 0 auto;
 }
 
-.footer-brand {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+.footer-brand { display: flex; flex-direction: column; gap: 14px; }
+
+.fb-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
 }
 
-.footer-logo {
-    font-size: 22px;
+.fb-icon { width: 20px; height: 20px; }
+.fb-icon svg { display: block; width: 20px; height: 20px; }
+
+.fb-wordmark {
+    font-size: 18px;
     font-weight: 800;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.4px;
     background: linear-gradient(130deg, #3B82F6 20%, #818CF8 80%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    line-height: 1;
-    display: inline-block;
 }
 
-.footer-tagline {
-    font-size: 14px;
-    color: var(--gray);
-    line-height: 1.7;
-    margin: 0;
-}
+.fb-tagline { font-size: 13.5px; color: var(--gray); line-height: 1.7; margin: 0; }
 
-.footer-disclaimer {
+.fb-disclaimer {
     font-size: 11.5px;
     color: var(--gray);
     line-height: 1.65;
     margin: 0;
-    opacity: 0.6;
+    opacity: 0.55;
     max-width: 300px;
 }
 
-.footer-copy {
-    font-size: 11.5px;
-    color: var(--gray);
-    opacity: 0.4;
-    margin: 0;
-}
+.fb-copy { font-size: 11.5px; color: var(--gray); opacity: 0.4; margin: 0; }
 
-.footer-col {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
+.footer-col { display: flex; flex-direction: column; gap: 18px; }
 
-.footer-col-heading {
+.fc-heading {
     font-size: 11px;
     font-weight: 700;
     color: var(--secondary);
@@ -1177,117 +1195,63 @@
     margin: 0;
 }
 
-.footer-links {
-    display: flex;
-    flex-direction: column;
-    gap: 11px;
-}
+.fc-links { display: flex; flex-direction: column; gap: 11px; }
+.fc-links a { font-size: 13.5px; color: var(--gray); text-decoration: none; transition: color 0.15s; }
+@media (hover: hover) { .fc-links a:hover { color: var(--secondary); } }
 
-.footer-links a {
-    font-size: 13.5px;
-    color: var(--gray);
-    text-decoration: none;
-    transition: color 0.15s;
-}
+/* ════════════════════════════════════════════════ RESPONSIVE */
 
-@media (hover: hover) {
-    .footer-links a:hover { color: var(--secondary); }
-}
-
-/* ══════════════════════════════════════════════ RESPONSIVE */
-
-/* 900px — footer collapses to 2 columns; stats stays at 4 */
+/* 900px — footer 2 cols */
 @media screen and (max-width: 900px) {
-    #footer-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 32px;
-    }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
 }
 
-/* 768px — platform 6-col (not 4, avoids 154px oversized tiles); steps vertical */
+/* 768px — steps vertical, pop grid 2-col */
 @media screen and (max-width: 768px) {
-    #platform-grid {
-        grid-template-columns: repeat(6, 1fr);
-    }
+    .pop-grid { grid-template-columns: repeat(2, 1fr); }
 
-    #steps-flow {
-        flex-direction: column;
-        gap: 32px;
-    }
-
-    .step-connector { display: none; }
-    .step-item { padding: 0; }
+    .steps { flex-direction: column; gap: 32px; }
+    .step-conn { display: none; }
+    .step-item { padding-right: 0; }
 }
 
-/* 660px — guides single column, header stacks */
+/* 660px — guides + pop single col */
 @media screen and (max-width: 660px) {
-    #guides-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .guides-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
+    .guides-grid { grid-template-columns: 1fr; }
+    .pop-grid { grid-template-columns: 1fr; }
+    .guides-hdr { flex-direction: column; align-items: flex-start; gap: 12px; }
 }
 
 /* 535px — full mobile layout */
 @media screen and (max-width: 535px) {
-    #hero-section {
-        min-height: calc(
-            100svh - var(--sidebar-height-mobile) - var(--sidebar-inner-padding) * 2
-        );
-        padding: 44px 16px 24px;
+    #hero {
+        min-height: calc(100svh - var(--sidebar-height-mobile) - var(--sidebar-inner-padding) * 2);
+        padding: 40px 16px 24px;
     }
 
-    #hero-inner { gap: 16px; }
+    .hfloats { display: none; }
 
-    #hero-headline {
-        font-size: 30px;
-        letter-spacing: -1.5px;
-    }
+    .hero-body { gap: 18px; }
 
-    #hero-sub { font-size: 15px; }
+    .hero-h1 { font-size: 32px; letter-spacing: -1.8px; }
+    .hero-sub { font-size: 14.5px; }
 
-    /* +40 chip redundant on mobile — SupportedServices button serves the same purpose */
-    .pchip-more { display: none; }
-    .platform-strip { gap: 6px; }
-    .pchip { width: 34px; height: 34px; font-size: 9.5px; }
+    .hero-platforms { gap: 7px; }
+    .hp-item { padding: 4px 10px 4px 4px; font-size: 11.5px; }
+    .hp-icon { width: 22px; height: 22px; border-radius: 5px; }
+    .hp-more { display: none; }
 
-    #hero-panel { border-radius: 16px; }
-    .panel-chrome {
-        padding: 10px 14px;
-        border-radius: 16px 16px 0 0;
-    }
-    .chrome-label { font-size: 10.5px; }
-    .cd-r, .cd-y, .cd-g { width: 9px; height: 9px; }
-    .panel-body { padding: 12px 12px 10px; }
+    .dl-panel { border-radius: 16px; }
+    .dl-chrome { padding: 9px 12px; border-radius: 16px 16px 0 0; }
+    .dlc-r,.dlc-y,.dlc-g { width: 9px; height: 9px; }
+    .dlc-label { font-size: 10.5px; }
+    .dl-body { padding: 12px 12px 10px; }
 
-    #hero-trust { gap: 8px 12px; }
-    .trust-dot { display: none; }
+    .ht-pill { font-size: 11.5px; padding: 5px 10px 5px 7px; }
 
-    .page-section { padding: 60px 16px; }
+    .page-sec { padding: 60px 16px; }
 
-    #platform-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
-    }
-    .ptile { padding: 14px 6px 12px; border-radius: 10px; }
-    .ptile-abbr { font-size: 12px; }
-    .ptile-name { font-size: 8px; }
-
-    /* Stats 2-col at mobile only */
-    #stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-    .stat-value { font-size: 32px; letter-spacing: -1.5px; }
-
-    #footer-grid {
-        grid-template-columns: 1fr;
-        gap: 28px;
-    }
-    .footer-disclaimer { max-width: none; }
+    .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+    .fb-disclaimer { max-width: none; }
 }
 </style>

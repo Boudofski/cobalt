@@ -187,6 +187,9 @@
             disabled={isDisabled}
         />
 
+        {#if !$link}
+            <span class="input-kbd" aria-hidden="true">⌘V</span>
+        {/if}
         <ClearButton click={() => ($link = "")} />
         <DownloadButton
             url={$link}
@@ -246,19 +249,49 @@
     }
 
     #input-container {
-        --input-padding: 10px;
+        --input-padding: 12px;
         display: flex;
-        box-shadow: 0 0 0 1.5px var(--input-border) inset;
-        /* webkit can't render the 1.5px box shadow properly,
-           so we duplicate the border as outline to fix it visually */
-        outline: 1.5px solid var(--input-border);
-        outline-offset: -1.5px;
+        background: rgba(255, 255, 255, 0.02);
+        box-shadow: 0 0 0 1px var(--input-border) inset;
+        outline: none;
         border-radius: var(--border-radius);
         align-items: center;
         gap: var(--input-padding);
-        font-size: 14px;
+        font-size: 14.5px;
         flex: 1;
-        transition: box-shadow 0.15s, outline-color 0.15s;
+        transition: box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s;
+    }
+
+    :global([data-theme="light"]) #input-container {
+        background: rgba(15, 23, 42, 0.015);
+    }
+
+    .input-kbd {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--gray);
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2.5px 6px;
+        border-radius: 4px;
+        margin-right: 2px;
+        pointer-events: none;
+        letter-spacing: 0.5px;
+        font-family: inherit;
+    }
+
+    :global([data-theme="light"]) .input-kbd {
+        background: rgba(15, 23, 42, 0.05);
+        border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    @media screen and (max-width: 535px) {
+        .input-kbd {
+            display: none;
+        }
     }
 
     #input-container:not(.clear-visible) :global(#clear-button) {
@@ -287,8 +320,13 @@
     }
 
     #input-container.focused {
-        box-shadow: 0 0 0 2px var(--blue) inset, 0 0 0 5px rgba(59, 130, 246, 0.1);
-        outline: none;
+        box-shadow: 0 0 0 2px var(--blue) inset, 0 0 24px rgba(56, 189, 248, 0.15);
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    :global([data-theme="light"]) #input-container.focused {
+        box-shadow: 0 0 0 2px var(--blue) inset, 0 0 24px rgba(2, 132, 199, 0.08);
+        background: rgba(255, 255, 255, 1);
     }
 
     #input-container.focused :global(#input-icons svg) {
