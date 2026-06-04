@@ -99,68 +99,162 @@
 </div>
 
 <style>
-    .status-page { display: flex; justify-content: center; padding: 48px var(--padding) 80px; min-height: 100%; }
-    .status-container { max-width: 640px; width: 100%; display: flex; flex-direction: column; gap: 24px; }
+    .status-page {
+        display: flex;
+        justify-content: center;
+        padding: 52px var(--padding) 88px;
+        min-height: 100%;
+    }
 
-    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--gray); }
+    .status-container {
+        max-width: 600px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12.5px;
+        color: var(--gray);
+    }
+
     .breadcrumb a { color: var(--blue); text-decoration: none; }
-    .breadcrumb a:hover { text-decoration: underline; }
+    @media (hover: hover) { .breadcrumb a:hover { text-decoration: underline; } }
 
     .status-header { display: flex; flex-direction: column; gap: 8px; }
-    .status-title { font-size: clamp(24px, 3.5vw, 32px); font-weight: 700; letter-spacing: -0.8px; color: var(--secondary); margin: 0; }
-    .status-sub { font-size: 14.5px; color: var(--gray); margin: 0; line-height: 1.6; }
 
-    .status-card {
-        padding: 20px 22px; border-radius: var(--border-radius);
-        background: var(--button); border: 1px solid var(--button-stroke);
+    .status-title {
+        font-size: clamp(24px, 3.5vw, 34px);
+        font-weight: 800;
+        letter-spacing: -1px;
+        color: var(--secondary);
+        margin: 0;
+        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
-    .status-card[data-status="online"] { border-color: rgba(34,197,94,0.4); }
-    .status-card[data-status="degraded"] { border-color: rgba(234,179,8,0.4); }
-    .status-card[data-status="offline"] { border-color: rgba(239,68,68,0.4); }
+
+    .status-sub { font-size: 15px; color: var(--gray); margin: 0; line-height: 1.65; }
+
+    /* ─── Main status card ─── */
+    .status-card {
+        padding: 22px 24px;
+        border-radius: 16px;
+        background: var(--button);
+        border: 1px solid var(--button-stroke);
+        transition: border-color 0.25s;
+    }
+
+    .status-card[data-status="online"]  { border-color: rgba(34,197,94,0.45);  background: color-mix(in srgb, #22C55E 4%, var(--button)); }
+    .status-card[data-status="degraded"]{ border-color: rgba(234,179,8,0.45);  background: color-mix(in srgb, #EAB308 4%, var(--button)); }
+    .status-card[data-status="offline"] { border-color: rgba(239,68,68,0.45);  background: color-mix(in srgb, #EF4444 4%, var(--button)); }
 
     .status-indicator { display: flex; align-items: center; gap: 14px; }
 
     .status-dot {
-        width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
         background: var(--gray);
-        animation: pulse 2s infinite;
+        animation: pulse 2.2s ease-in-out infinite;
     }
-    .status-card[data-status="checking"] .status-dot { background: var(--gray); }
-    .status-card[data-status="online"] .status-dot { background: #22C55E; }
+
+    .status-card[data-status="online"]   .status-dot { background: #22C55E; }
     .status-card[data-status="degraded"] .status-dot { background: #EAB308; }
-    .status-card[data-status="offline"] .status-dot { background: #EF4444; animation: none; }
+    .status-card[data-status="offline"]  .status-dot { background: #EF4444; animation: none; }
 
     @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.4; }
+        0%, 100% { opacity: 1;   transform: scale(1); }
+        50%       { opacity: 0.4; transform: scale(0.85); }
     }
 
     .status-label-group { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-    .status-name { font-size: 14px; font-weight: 600; color: var(--secondary); }
-    .status-url { font-size: 12px; color: var(--gray); }
+    .status-name { font-size: 14.5px; font-weight: 700; color: var(--secondary); }
+    .status-url  { font-size: 12px; color: var(--gray); }
 
     .status-badge {
-        font-size: 13px; font-weight: 600; padding: 4px 12px;
-        border-radius: 999px; white-space: nowrap;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 999px;
+        white-space: nowrap;
+        letter-spacing: 0.3px;
     }
-    .status-card[data-status="checking"] .status-badge { background: rgba(100,116,139,0.15); color: var(--gray); }
-    .status-card[data-status="online"] .status-badge { background: rgba(34,197,94,0.12); color: #22C55E; }
-    .status-card[data-status="degraded"] .status-badge { background: rgba(234,179,8,0.12); color: #EAB308; }
-    .status-card[data-status="offline"] .status-badge { background: rgba(239,68,68,0.12); color: #EF4444; }
 
-    .platform-card { padding: 20px 22px; border-radius: var(--border-radius); background: var(--button); border: 1px solid var(--button-stroke); display: flex; flex-direction: column; gap: 14px; }
-    .platform-heading { font-size: 14px; font-weight: 700; color: var(--secondary); margin: 0; }
+    .status-card[data-status="checking"] .status-badge { background: rgba(100,116,139,0.12); color: var(--gray); }
+    .status-card[data-status="online"]   .status-badge { background: rgba(34,197,94,0.14);   color: #16A34A; }
+    .status-card[data-status="degraded"] .status-badge { background: rgba(234,179,8,0.14);   color: #B45309; }
+    .status-card[data-status="offline"]  .status-badge { background: rgba(239,68,68,0.14);   color: #DC2626; }
+
+    /* ─── Platform card ─── */
+    .platform-card {
+        padding: 22px 24px;
+        border-radius: 16px;
+        background: var(--button);
+        border: 1px solid var(--button-stroke);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .platform-heading {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--secondary);
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.6;
+    }
+
     .platform-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-    .platform-chip { padding: 4px 12px; border-radius: 999px; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); font-size: 12.5px; color: var(--blue); font-weight: 500; }
-    .platform-note { font-size: 12.5px; color: var(--gray); line-height: 1.6; margin: 0; }
 
-    .actions-row { display: flex; align-items: center; gap: 14px; }
-    .recheck-btn { padding: 8px 18px; border-radius: var(--border-radius); background: var(--button); border: 1px solid var(--button-stroke); font-size: 13px; font-weight: 600; color: var(--secondary); cursor: pointer; transition: border-color 0.18s; }
-    .recheck-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .platform-chip {
+        padding: 5px 14px;
+        border-radius: 999px;
+        background: rgba(59,130,246,0.07);
+        border: 1px solid rgba(59,130,246,0.18);
+        font-size: 12.5px;
+        color: var(--blue);
+        font-weight: 500;
+    }
+
+    .platform-note { font-size: 12.5px; color: var(--gray); line-height: 1.65; margin: 0; opacity: 0.8; }
+
+    /* ─── Actions ─── */
+    .actions-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+    .recheck-btn {
+        padding: 9px 20px;
+        border-radius: var(--border-radius);
+        background: var(--button);
+        border: 1px solid var(--button-stroke);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--secondary);
+        cursor: pointer;
+        transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+
+    @media (hover: hover) {
+        .recheck-btn:hover {
+            border-color: rgba(59,130,246,0.4);
+            color: var(--blue);
+            background: var(--button-hover);
+        }
+    }
+
     .last-checked { font-size: 12.5px; color: var(--gray); }
 
     .contact-row { font-size: 13.5px; color: var(--gray); }
     .contact-row a { color: var(--blue); text-decoration: underline; }
 
-    @media (max-width: 535px) { .status-page { padding: 32px 16px 60px; } .status-indicator { flex-wrap: wrap; } .status-badge { align-self: flex-start; margin-left: 24px; } }
+    @media (max-width: 535px) {
+        .status-page { padding: 36px 16px 64px; }
+        .status-indicator { flex-wrap: wrap; }
+        .status-badge { align-self: flex-start; margin-left: 24px; }
+    }
 </style>

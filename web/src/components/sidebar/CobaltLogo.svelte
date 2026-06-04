@@ -26,7 +26,7 @@
         justify-content: center;
         width: 36px;
         height: 36px;
-        border-radius: 10px;
+        border-radius: 12px;
         overflow: hidden;
     }
 
@@ -38,10 +38,10 @@
     #brand-name {
         font-size: 9.5px;
         font-weight: 700;
-        letter-spacing: 1px;
+        letter-spacing: 0.9px;
         color: var(--sidebar-highlight);
         text-transform: uppercase;
-        opacity: 0.85;
+        opacity: 0.9;
         white-space: nowrap;
     }
 

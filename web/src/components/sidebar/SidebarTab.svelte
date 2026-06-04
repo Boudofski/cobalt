@@ -58,12 +58,12 @@
         align-items: center;
         text-align: center;
         gap: 4px;
-        padding: 9px 4px;
+        padding: 9px 6px;
         color: var(--sidebar-highlight);
         font-size: var(--sidebar-font-size);
-        opacity: 0.6;
+        opacity: 0.55;
         height: fit-content;
-        border-radius: 10px;
+        border-radius: 12px;
         transition: opacity 0.15s, transform 0.15s, background-color 0.15s;
 
         text-decoration: none;
@@ -144,8 +144,9 @@
 
     @media screen and (max-width: 535px) {
         .sidebar-tab {
-            padding: 5px var(--padding);
+            padding: 7px var(--padding);
             min-width: calc(var(--sidebar-width) / 2);
+            min-height: 42px;
         }
 
         .sidebar-tab.active {

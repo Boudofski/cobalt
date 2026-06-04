@@ -258,6 +258,7 @@
         gap: var(--input-padding);
         font-size: 14px;
         flex: 1;
+        transition: box-shadow 0.15s, outline-color 0.15s;
     }
 
     #input-container:not(.clear-visible) :global(#clear-button) {
@@ -286,9 +287,8 @@
     }
 
     #input-container.focused {
-        box-shadow: none;
-        outline: var(--secondary) 2px solid;
-        outline-offset: -1px;
+        box-shadow: 0 0 0 2px var(--blue) inset, 0 0 0 5px rgba(59, 130, 246, 0.1);
+        outline: none;
     }
 
     #input-container.focused :global(#input-icons svg) {

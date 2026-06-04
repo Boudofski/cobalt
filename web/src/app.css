@@ -196,6 +196,8 @@ body {
     -webkit-user-select: none;
     -webkit-user-drag: none;
     -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 ::-webkit-scrollbar {
@@ -235,6 +237,7 @@ button, .button {
     background-color: var(--button);
     color: var(--button-text);
     box-shadow: var(--button-box-shadow);
+    transition: background-color 0.15s, opacity 0.15s;
 }
 
 :focus-visible {
@@ -325,6 +328,8 @@ button {
 h1, h2, h3, h4, h5, h6 {
     font-weight: 500;
     margin-block: 0;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 h1 {
