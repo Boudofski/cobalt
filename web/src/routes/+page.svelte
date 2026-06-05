@@ -864,6 +864,10 @@
 
 .hero-terms a { color: var(--blue); text-decoration: underline; }
 
+:global([data-theme="light"]) .hero-terms {
+    color: rgba(15, 23, 42, 0.5);
+}
+
 /* ════════════════════════════════════════ SHARED SECTION STYLES */
 .page-sec {
     padding: 120px var(--padding);
@@ -1387,13 +1391,87 @@
 
 @media screen and (max-width: 768px) {
     .hfloats { display: none !important; }
+    .dec-result-card { display: none !important; }
+    #hero {
+        display: block;
+        min-height: auto;
+        overflow: visible;
+    }
+    .hero-body {
+        flex: 0 0 auto;
+        justify-content: flex-start;
+        margin: 0 auto;
+    }
+    .hero-platforms {
+        display: none;
+    }
     .page-sec { padding: 60px 16px; }
-    .pop-grid { grid-template-columns: 1fr; gap: 12px; margin-top: 24px; }
-    .steps { flex-direction: column; gap: 12px; margin-top: 32px; }
+    .sec-in {
+        gap: 12px;
+        align-items: stretch;
+    }
+    .sec-label,
+    .sec-h2,
+    .sec-sub {
+        text-align: center;
+    }
+    #downloader-wrap,
+    .premium-command-panel {
+        width: 100%;
+        max-width: none;
+        box-sizing: border-box;
+    }
+    .pop-grid,
+    .steps,
+    .faq-list,
+    .guides-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100%;
+        gap: 16px;
+        margin-top: 24px;
+        margin-bottom: 0;
+        min-height: unset;
+        height: auto;
+        position: static;
+        transform: none;
+        align-self: stretch;
+    }
+    .pop-card,
+    .step-item,
+    .faq-item,
+    .gcard {
+        grid-column: auto !important;
+        grid-row: auto !important;
+        position: relative;
+        transform: none !important;
+        margin: 0;
+        width: 100%;
+        height: auto;
+        min-height: unset;
+        align-self: stretch;
+        box-sizing: border-box;
+    }
+    .pop-grid { gap: 14px; }
+    .pop-card {
+        min-height: 72px;
+        padding: 16px;
+        gap: 12px;
+        border-radius: 18px;
+    }
+    .steps { gap: 16px; }
     .step-item { padding: 20px; border-radius: 20px; }
-    .guides-grid { grid-template-columns: 1fr; gap: 16px; margin-top: 24px; }
+    .step-icon-wrap {
+        position: static;
+        transform: none;
+    }
+    .step-n {
+        position: static;
+        transform: none;
+    }
+    .guides-grid { gap: 16px; }
     .gcard-body { padding: 24px; }
-    .faq-list { margin-top: 24px; gap: 10px; }
+    .faq-list { gap: 12px; }
     #sp-footer { padding: 48px 16px 40px; }
     .footer-grid { grid-template-columns: 1fr; gap: 32px; }
     .footer-brand { gap: 16px; }
@@ -1408,7 +1486,6 @@
     .hero-h1 { font-size: clamp(30px, 8vw, 36px); letter-spacing: -1.5px; }
     .hero-sub { font-size: 15px; }
     .premium-command-panel { padding: 16px 12px; border-radius: 20px; } /* Safe padding/width for command palette */
-    .pop-card { padding: 16px; gap: 12px; border-radius: 18px; }
     .pop-icon { width: 48px; height: 48px; border-radius: 12px; }
     .pop-icon :global(svg) { width: 24px !important; height: 24px !important; }
 }
