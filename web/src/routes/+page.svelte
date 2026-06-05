@@ -395,7 +395,12 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+    max-width: 100%;
     min-height: 100%;
+    flex: 0 0 100%;
+    min-width: 0;
+    overflow-x: clip;
+    box-sizing: border-box;
     --hero-dark: #030307;
     --surface: rgba(255,255,255,0.02);
     --surface-hover: rgba(255,255,255,0.05);
@@ -405,6 +410,15 @@
     --muted: #94A3B8;
     --blue: #38BDF8;
     --green: #34D399;
+}
+
+:global(#snapsave.is-homepage),
+:global(#snapsave.is-homepage #content) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+    box-sizing: border-box;
 }
 
 /* ════════════════════════════════════════════ HERO */
@@ -1390,21 +1404,73 @@
 }
 
 @media screen and (max-width: 768px) {
-    .hfloats { display: none !important; }
     .dec-result-card { display: none !important; }
+    #sp,
+    :global(#snapsave.is-homepage),
+    :global(#snapsave.is-homepage #content) {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        overflow-x: clip;
+    }
     #hero {
         display: block;
+        flex: none;
+        height: auto;
         min-height: auto;
-        overflow: visible;
+        overflow: hidden;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
     .hero-body {
         flex: 0 0 auto;
         justify-content: flex-start;
         margin: 0 auto;
     }
+    .hero-body .brand-row {
+        display: none;
+    }
     .hero-platforms {
         display: none;
     }
+    .hfloats {
+        display: block !important;
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .hfc {
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        border-radius: 999px;
+        justify-content: center;
+        gap: 0;
+        opacity: 0.42;
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        transform: none !important;
+        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+    }
+    .hfc-name {
+        display: none;
+    }
+    .hfc-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 9px;
+    }
+    .hfc-0 { top: 17% !important; left: 4% !important; }
+    .hfc-1 { top: 17% !important; right: 4% !important; }
+    .hfc-2 { top: 35% !important; left: 4% !important; }
+    .hfc-3 { display: none; }
+    .hfc-4 { top: 35% !important; right: 4% !important; }
+    .hfc-5 { display: none; }
     .page-sec { padding: 60px 16px; }
     .sec-in {
         gap: 12px;
@@ -1451,6 +1517,7 @@
         min-height: unset;
         align-self: stretch;
         box-sizing: border-box;
+        overflow: visible;
     }
     .pop-grid { gap: 14px; }
     .pop-card {
@@ -1488,5 +1555,26 @@
     .premium-command-panel { padding: 16px 12px; border-radius: 20px; } /* Safe padding/width for command palette */
     .pop-icon { width: 48px; height: 48px; border-radius: 12px; }
     .pop-icon :global(svg) { width: 24px !important; height: 24px !important; }
+}
+
+@media screen and (max-width: 430px) {
+    .page-sec {
+        padding: 56px 16px;
+    }
+    .pop-grid,
+    .steps,
+    .faq-list,
+    .guides-grid {
+        margin-top: 20px;
+    }
+    .guides-hdr {
+        align-items: center;
+    }
+}
+
+@media screen and (max-width: 349px) {
+    .hfloats {
+        display: none !important;
+    }
 }
 </style>
