@@ -11,7 +11,7 @@
     sectionId="summary"
 />
 
-SnapSave is built on top of [cobalt](https://github.com/imputnet/cobalt), an excellent open-source media downloader created by the [imput](https://imput.net/) team. huge thanks to them for building a solid, privacy-first foundation.
+SnapSave is built using advanced open-source media downloading technology. Huge thanks to the developers and contributors who help build a solid, privacy-first foundation for the web.
 </section>
 
 <section id="motivation">
@@ -31,9 +31,9 @@ local media processing uses [ffmpeg](https://ffmpeg.org/) via WebAssembly, compi
     sectionId="licenses"
 />
 
-the cobalt API (processing server) is licensed under [AGPL-3.0]({docs.apiLicense}).
+the SnapSave API (processing server) is licensed under [AGPL-3.0]({docs.apiLicense}).
 
-the cobalt frontend is licensed under [CC-BY-NC-SA 4.0]({docs.webLicense}).
+the SnapSave frontend is licensed under [CC-BY-NC-SA 4.0]({docs.webLicense}).
 
 the full list of dependencies is available [on GitHub]({contacts.github}).
 </section>

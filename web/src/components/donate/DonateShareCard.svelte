@@ -17,7 +17,7 @@
     import CobaltQr from "$components/icons/CobaltQR.svelte";
     import CopyIcon from "$components/misc/CopyIcon.svelte";
 
-    const cobaltUrl = "https://cobalt.tools/";
+    const cobaltUrl = "https://snapssave.com/";
 
     let copied = false;
 

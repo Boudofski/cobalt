@@ -55,13 +55,3 @@
     />
 </SettingsCategory>
 
-{#if device.is.mobile}
-    <SettingsCategory sectionId="tabs" title={$t("settings.tabs")}>
-        <SettingsToggle
-            settingContext="appearance"
-            settingId="hideRemuxTab"
-            title={$t("settings.tabs.hide_remux")}
-            description={$t("settings.tabs.hide_remux.description")}
-        />
-    </SettingsCategory>
-{/if}

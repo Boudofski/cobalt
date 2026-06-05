@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+    import { goto } from "$app/navigation";
     import { t } from "$lib/i18n/translations";
     import { createRemuxPipeline } from "$lib/task-manager/queue";
 
@@ -12,6 +14,10 @@
 
     let draggedOver = false;
     let files: FileList | undefined;
+
+    onMount(() => {
+        goto("/", { replaceState: true });
+    });
 
     const remux = async () => {
         if (!files) return;
@@ -30,6 +36,7 @@
 
 <svelte:head>
     <title>{$t("tabs.remux")} ~ {$t("general.cobalt")}</title>
+    <meta name="robots" content="noindex, nofollow" />
     <meta
         property="og:title"
         content="{$t('tabs.remux')} ~ {$t('general.cobalt')}"

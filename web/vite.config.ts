@@ -72,7 +72,8 @@ const generateSitemap: PluginOption = {
         await createSitemap(`https://${process.env.WEB_HOST}`, {
             changeFreq: 'monthly',
             outDir: '.svelte-kit/output/prerendered/pages',
-            resetTime: true
+            resetTime: true,
+            exclude: ['/donate', '/remux']
         });
     }
 }

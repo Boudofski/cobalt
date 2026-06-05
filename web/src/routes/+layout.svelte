@@ -27,6 +27,8 @@
     import ProcessingQueue from "$components/queue/ProcessingQueue.svelte";
     import UpdateNotification from "$components/misc/UpdateNotification.svelte";
 
+    $: isHomepage = $page.url.pathname === "/";
+
     $: reduceMotion =
         $settings.accessibility.reduceMotion || device.prefers.reducedMotion;
 
@@ -119,19 +121,22 @@
         <div id="preload" aria-hidden="true">??</div>
     {/if}
     <div
-        id="cobalt"
+        id="snapsave"
         class:loaded={browser}
         data-chrome={device.browser.chrome}
         data-iphone={device.is.iPhone}
         data-mobile={device.is.mobile}
         data-reduce-motion={reduceMotion}
         data-reduce-transparency={reduceTransparency}
+        class:is-homepage={isHomepage}
     >
         {#if device.is.iPhone && app.is.installed}
             <NotchSticker />
         {/if}
         <DialogHolder />
-        <Sidebar />
+        {#if !isHomepage}
+            <Sidebar />
+        {/if}
         {#if $updated}
             <UpdateNotification />
         {/if}
@@ -146,7 +151,7 @@
 </div>
 
 <style>
-    #cobalt {
+    #snapsave {
         height: 100%;
         width: 100%;
         display: grid;
@@ -159,9 +164,14 @@
         position: fixed;
     }
 
+    #snapsave.is-homepage {
+        grid-template-columns: 1fr;
+        background-color: var(--primary);
+    }
+
     /* add padding for notch / dynamic island in landscape */
     @media screen and (orientation: landscape) and (min-width: 535px) {
-        #cobalt[data-iphone="true"] {
+        #snapsave[data-iphone="true"] {
             grid-template-columns:
                 calc(
                     var(--sidebar-width) + var(--sidebar-inner-padding) * 2 +
@@ -170,7 +180,7 @@
                 1fr;
         }
 
-        #cobalt[data-iphone="true"] #content {
+        #snapsave[data-iphone="true"] #content {
             padding-right: env(safe-area-inset-right);
         }
     }
@@ -207,7 +217,7 @@
             --sidebar-highlight: #3B82F6;
         }
 
-        #cobalt {
+        #snapsave {
             display: grid;
             grid-template-columns: unset;
             grid-template-rows:
