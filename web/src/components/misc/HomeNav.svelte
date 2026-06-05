@@ -149,9 +149,18 @@
         transition: all 0.2s;
     }
 
+    :global([data-theme="light"]) .settings-btn {
+        color: rgba(15, 23, 42, 0.5);
+    }
+
     .settings-btn:hover {
         background: rgba(255, 255, 255, 0.05);
         color: white;
+    }
+
+    :global([data-theme="light"]) .settings-btn:hover {
+        background: rgba(15, 23, 42, 0.05);
+        color: #0F172A;
     }
 
     .settings-btn svg {
@@ -178,6 +187,9 @@
 
     @media screen and (max-width: 768px) {
         .nav-links {
+            display: none;
+        }
+        .nav-btn {
             display: none;
         }
     }

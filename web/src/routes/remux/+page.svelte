@@ -37,6 +37,7 @@
 <svelte:head>
     <title>{$t("tabs.remux")} ~ {$t("general.cobalt")}</title>
     <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="refresh" content="0; url=/" />
     <meta
         property="og:title"
         content="{$t('tabs.remux')} ~ {$t('general.cobalt')}"

@@ -11,6 +11,7 @@
 <svelte:head>
     <title>{$t("tabs.donate")} ~ {$t("general.cobalt")}</title>
     <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="refresh" content="0; url=/" />
 </svelte:head>
 
 <div style="display:none">
