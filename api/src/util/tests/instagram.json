@@ -130,5 +130,84 @@
             "status": "error",
             "errorCode": "error.api.content.post.private"
         }
+    },
+    {
+        "name": "reel url with igsh query param (normalization strips it)",
+        "url": "https://www.instagram.com/reel/DFQe23tOWKz/?igsh=abc123xyz",
+        "canFail": true,
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "redirect"
+        }
+    },
+    {
+        "name": "reel url with utm_source query param (normalization strips it)",
+        "url": "https://www.instagram.com/reel/DFQe23tOWKz/?utm_source=ig_web_copy_link",
+        "canFail": true,
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "redirect"
+        }
+    },
+    {
+        "name": "non-www instagram.com base url",
+        "url": "https://instagram.com/reel/DFQe23tOWKz/",
+        "canFail": true,
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "redirect"
+        }
+    },
+    {
+        "name": "post url with trailing slash",
+        "url": "https://www.instagram.com/p/CmCVWoIr9OH/",
+        "canFail": true,
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "redirect"
+        }
+    },
+    {
+        "name": "tv url format",
+        "url": "https://www.instagram.com/tv/CmCVWoIr9OH/",
+        "canFail": true,
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "redirect"
+        }
+    },
+    {
+        "name": "unsupported instagram path does not return private error",
+        "url": "https://www.instagram.com/explore/reels/",
+        "params": {},
+        "expected": {
+            "code": 400,
+            "status": "error"
+        }
+    },
+    {
+        "name": "share/reel url format",
+        "url": "https://www.instagram.com/share/reel/DFQe23tOWKz/",
+        "canFail": true,
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "redirect"
+        }
+    },
+    {
+        "name": "username/reel url format",
+        "url": "https://www.instagram.com/testaccount/reel/DFQe23tOWKz/",
+        "canFail": true,
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "redirect"
+        }
     }
 ]

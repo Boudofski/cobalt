@@ -106,32 +106,42 @@ export default function instagram(obj) {
         return data.json();
     }
 
-    async function getMediaId(id, { cookie, token } = {}) {
+    async function getMediaId(id, { cookie, token } = {}, diag) {
         const oembedURL = new URL('https://i.instagram.com/api/v1/oembed/');
         oembedURL.searchParams.set('url', `https://www.instagram.com/p/${id}/`);
 
-        const oembed = await fetch(oembedURL, {
+        const response = await fetch(oembedURL, {
             headers: {
                 ...mobileHeaders,
                 ...( token && { authorization: `Bearer ${token}` } ),
                 cookie
             },
             dispatcher
-        }).then(r => r.json()).catch(() => {});
+        }).catch(() => null);
 
+        if (!response?.ok) {
+            if (diag && response?.status) diag.httpStatus = diag.httpStatus || response.status;
+            return;
+        }
+        const oembed = await response.json().catch(() => {});
         return oembed?.media_id;
     }
 
-    async function requestMobileApi(mediaId, { cookie, token } = {}) {
-        const mediaInfo = await fetch(`https://i.instagram.com/api/v1/media/${mediaId}/info/`, {
+    async function requestMobileApi(mediaId, { cookie, token } = {}, diag) {
+        const response = await fetch(`https://i.instagram.com/api/v1/media/${mediaId}/info/`, {
             headers: {
                 ...mobileHeaders,
                 ...( token && { authorization: `Bearer ${token}` } ),
                 cookie
             },
             dispatcher
-        }).then(r => r.json()).catch(() => {});
+        }).catch(() => null);
 
+        if (!response?.ok) {
+            if (diag && response?.status) diag.httpStatus = diag.httpStatus || response.status;
+            return;
+        }
+        const mediaInfo = await response.json().catch(() => {});
         return mediaInfo?.items?.[0];
     }
 
@@ -144,7 +154,15 @@ export default function instagram(obj) {
             dispatcher
         }).then(r => r.text()).catch(() => {});
 
-        let embedData = JSON.parse(data?.match(/"init",\[\],\[(.*?)\]\],/)[1]);
+        const rawMatch = data?.match(/"init",\[\],\[(.*?)\]\],/)?.[1];
+        if (!rawMatch) return false;
+
+        let embedData;
+        try {
+            embedData = JSON.parse(rawMatch);
+        } catch {
+            return false;
+        }
 
         if (!embedData || !embedData?.contextJSON) return false;
 
@@ -268,8 +286,10 @@ export default function instagram(obj) {
             });
 
             const response = await req.text();
-            if (response.includes('"tracePolicy":"polaris.privatePostPage"'))
+            if (response.includes('"tracePolicy":"polaris.privatePostPage"')) {
+                console.error('[instagram] post confirmed private', { service: 'instagram', category: 'login_required' });
                 return { error: 'content.post.private' };
+            }
 
             const [, mediaId, mediaOwnerId] = response.match(
                 /"media_id":\s*?"(\d+)","media_owner_id":\s*?"(\d+)"/
@@ -418,6 +438,8 @@ export default function instagram(obj) {
                                     && data.gql_data !== null
                                     && data?.gql_data?.xdt_shortcode_media !== null;
         let data, result;
+        const diag = { httpStatus: 0 };
+
         try {
             const cookie = getCookie('instagram');
 
@@ -425,16 +447,16 @@ export default function instagram(obj) {
             const token = bearer?.values()?.token;
 
             // get media_id for mobile api, three methods
-            let media_id = await getMediaId(id);
-            if (!media_id && token) media_id = await getMediaId(id, { token });
-            if (!media_id && cookie) media_id = await getMediaId(id, { cookie });
+            let media_id = await getMediaId(id, {}, diag);
+            if (!media_id && token) media_id = await getMediaId(id, { token }, diag);
+            if (!media_id && cookie) media_id = await getMediaId(id, { cookie }, diag);
 
             // mobile api (bearer)
-            if (media_id && token) data = await requestMobileApi(media_id, { token });
+            if (media_id && token) data = await requestMobileApi(media_id, { token }, diag);
 
             // mobile api (no cookie, cookie)
-            if (media_id && !hasData(data)) data = await requestMobileApi(media_id);
-            if (media_id && cookie && !hasData(data)) data = await requestMobileApi(media_id, { cookie });
+            if (media_id && !hasData(data)) data = await requestMobileApi(media_id, {}, diag);
+            if (media_id && cookie && !hasData(data)) data = await requestMobileApi(media_id, { cookie }, diag);
 
             // html embed (no cookie, cookie)
             if (!hasData(data)) data = await requestHTML(id);
@@ -446,6 +468,16 @@ export default function instagram(obj) {
         } catch {}
 
         if (!hasData(data)) {
+            const diagCategory = diag.httpStatus === 429 ? 'rate_limited'
+                               : diag.httpStatus === 403 ? 'blocked'
+                               : 'parser_failed_or_unavailable';
+            console.error('[instagram] extraction failed', {
+                service: 'instagram',
+                httpStatus: diag.httpStatus,
+                category: diagCategory,
+            });
+
+            if (diag.httpStatus === 429) return { error: 'fetch.rate' };
             return getErrorContext(id);
         }
 

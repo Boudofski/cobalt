@@ -146,11 +146,24 @@ export const savingHandler = async ({ url, request, oldTaskId }: SavingHandlerAr
             || get(t)("error.api.generic");
 
         // Replace with user-friendly platform-specific messages for content/fetch failures
-        const isDownloadFailure = /\.(content\.|fetch\.)/.test(errorCode);
+        const isDownloadFailure = /\.(content\.|fetch\.|link\.)/.test(errorCode);
         if (isDownloadFailure && selectedRequest?.url) {
             const platform = detectPlatform(selectedRequest.url);
             if (platform === 'Instagram') {
-                errorMsg = "This Instagram post may be private, expired, or unavailable.";
+                const code = errorCode.replace('error.api.', '');
+                if (code === 'content.post.private') {
+                    errorMsg = "This Instagram post is private or requires sign-in.";
+                } else if (code === 'link.unsupported') {
+                    errorMsg = "Try copying the direct Reel or post link from Instagram.";
+                } else if (code === 'fetch.rate') {
+                    errorMsg = "Instagram temporarily blocked this request. Try again in a few seconds.";
+                } else if (code === 'content.post.age') {
+                    errorMsg = "This Instagram post is age-restricted and can't be accessed anonymously.";
+                } else if (code === 'fetch.fail') {
+                    errorMsg = "We couldn't reach Instagram right now. Try again later.";
+                } else {
+                    errorMsg = "This Instagram post could not be processed right now. Try again later.";
+                }
             } else if (platform === 'TikTok') {
                 errorMsg = "This TikTok link may be unavailable or temporarily blocked.";
             } else if (platform === 'Pinterest') {
