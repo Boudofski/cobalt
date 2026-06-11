@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { t } from "$lib/i18n/translations";
     import { device } from "$lib/device";
-    import { openFile, autoDownload } from "$lib/download";
+    import { openFile, autoDownload, copyURL } from "$lib/download";
 
     import type { CobaltFileUrlType } from "$lib/types/api";
 
@@ -11,7 +11,6 @@
 
     import IconDownload from "@tabler/icons-svelte/IconDownload.svelte";
     import IconExternalLink from "@tabler/icons-svelte/IconExternalLink.svelte";
-    import IconShare2 from "@tabler/icons-svelte/IconShare2.svelte";
 
     export let id: string;
     export let dismissable = true;
@@ -28,10 +27,7 @@
     let close: () => void;
     let downloading = false;
     let downloadError = false;
-    // iOS state for the redirect/blob path (non-tunnel)
-    let iosAnchorAttempted = false;
-    let iosBlobFile: File | null = null;
-    let iosFetchingShare = false;
+    let copied = false;
 
     $: format = filename?.split('.').pop()?.toUpperCase() ?? '';
 
@@ -53,13 +49,7 @@
     $: safeFilename = filename
         ?? (platform === 'Pinterest' ? 'snapsave-pinterest-video.mp4' : 'snapsave-download.mp4');
 
-    // For iOS + tunnel: the primary button is a real <a> element so Safari
-    // recognises it as an authentic user-tap navigation (window.open inside
-    // async functions is blocked by WebKit even without any awaits).
-    $: iosTunnelMode = device.is.iOS && urlType === 'tunnel' && !!url;
-
     // Dev-mode diagnostic — confirms what the dialog received.
-    // Remove or disable if logs become noisy in production.
     onMount(() => {
         if (import.meta.env.DEV && url) {
             console.debug('[SnapSave] SavingDialog opened', {
@@ -69,87 +59,18 @@
                 filename,
                 safeFilename,
                 'device.is.iOS': device.is.iOS,
-                iosTunnelMode,
             });
         }
     });
 
-    // ── iOS share sheet (stage 2 for both paths) ──────────────────────────────
-    //
-    // If iosBlobFile is already set (redirect path fetched it during stage 1),
-    // share it directly. Otherwise do a lazy blob fetch first.
-    // This function is always called from a button on:click → user gesture valid.
+    // ── iOS copy link ─────────────────────────────────────────────────────────
 
-    const tryShare = async (f: File) => {
+    const handleCopy = async () => {
         try {
-            if (navigator.canShare?.({ files: [f] })) {
-                await navigator.share({ files: [f], title: f.name });
-            } else {
-                downloadError = true;
-            }
-        } catch (e: unknown) {
-            if ((e as { name?: string })?.name !== 'AbortError') {
-                downloadError = true;
-            }
-        }
-    };
-
-    const handleIOSShare = async () => {
-        if (iosBlobFile) {
-            return tryShare(iosBlobFile);
-        }
-        // Lazy fetch for the tunnel path (blob not yet available)
-        iosFetchingShare = true;
-        try {
-            const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            const blob = await resp.blob();
-            const f = new File([blob], safeFilename, { type: blob.type || 'video/mp4' });
-            iosBlobFile = f;
-            await tryShare(f);
-        } catch {
-            downloadError = true;
-        } finally {
-            iosFetchingShare = false;
-        }
-    };
-
-    // ── iOS redirect / blob path ──────────────────────────────────────────────
-    //
-    // Used for redirect-type URLs (CDN direct links without Content-Disposition)
-    // and as the fallback when tunnel navigation somehow doesn't trigger a download.
-    // Fetches the blob, clicks a <a download> anchor (Files app on iOS 13+),
-    // and keeps the File for the share-sheet fallback.
-
-    const handleDownloadIOSBlob = async () => {
-        downloading = true;
-        downloadError = false;
-        iosAnchorAttempted = false;
-        iosBlobFile = null;
-
-        try {
-            const resp = await fetch(url, { mode: 'cors', credentials: 'omit' });
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            const blob = await resp.blob();
-            const mime = blob.type || 'video/mp4';
-            const f = new File([blob], safeFilename, { type: mime });
-
-            const blobUrl = URL.createObjectURL(f);
-            const a = document.createElement('a');
-            a.href = blobUrl;
-            a.download = safeFilename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
-
-            iosBlobFile = f;
-            iosAnchorAttempted = true;
-        } catch {
-            downloadError = true;
-        } finally {
-            downloading = false;
-        }
+            await copyURL(url);
+            copied = true;
+            setTimeout(() => { copied = false; }, 2000);
+        } catch { /* silently ignore clipboard errors */ }
     };
 
     // ── Desktop / Android handler ─────────────────────────────────────────────
@@ -157,10 +78,6 @@
     const handleDownload = async () => {
         if (file) return openFile(file);
         if (!url) return;
-
-        // iOS tunnel mode uses a real <a> element — this handler is not invoked
-        // for that path. iOS redirect falls through to handleDownloadIOSBlob.
-        if (device.is.iOS) return handleDownloadIOSBlob();
 
         downloading = true;
         downloadError = false;
@@ -215,12 +132,11 @@
         <div class="actions">
 
             <!--
-                iOS + tunnel: real <a> element.
-                Safari honours Content-Disposition: attachment on a user-tapped
-                anchor navigation. window.open() inside async handlers is silently
-                blocked by WebKit even when no await has run.
+                iOS (iPhone/iPad) + URL: show a real visible anchor immediately.
+                No async blob fetch — Safari handles the download natively on tap.
+                Both tunnel and redirect URL types use this path.
             -->
-            {#if iosTunnelMode}
+            {#if device.is.iOS && url && !file}
                 <a
                     href={url}
                     target="_blank"
@@ -228,76 +144,17 @@
                     class="btn-download"
                 >
                     <IconDownload />
-                    Download File
+                    Open download link
                 </a>
 
+                <button class="btn-copy" on:click={handleCopy}>
+                    <IconExternalLink />
+                    {copied ? 'Copied ✓' : 'Copy download link'}
+                </button>
+
                 <p class="ios-hint">
-                    Tap Download File. If Safari opens the video instead, tap Share → Save to Files.
+                    On iPhone, tap Open download link. If the video opens, use Share → Save Video, or long-press the link and choose Download Linked File / Save to Files.
                 </p>
-
-                <button
-                    class="btn-share"
-                    on:click={handleIOSShare}
-                    disabled={iosFetchingShare}
-                >
-                    <IconShare2 />
-                    {iosFetchingShare ? 'Preparing…' : 'Save / Share File'}
-                </button>
-
-                {#if downloadError}
-                    <div class="hint-panel">
-                        <p>
-                            This source can't be saved automatically on iPhone Safari.
-                            Open the video, then tap Share → Save to Files.
-                        </p>
-                        <a href={url} target="_blank" rel="noopener noreferrer" class="manual-link">
-                            <IconExternalLink />
-                            Open Video
-                        </a>
-                    </div>
-                {/if}
-
-            <!--
-                iOS + redirect, or non-iOS file download (local processing output):
-                use the existing blob / button path.
-            -->
-            {:else if device.is.iOS && !file}
-                <button
-                    class="btn-download"
-                    class:is-loading={downloading}
-                    disabled={downloading}
-                    on:click={handleDownload}
-                >
-                    <IconDownload />
-                    {downloading ? 'Preparing your file…' : 'Download File'}
-                </button>
-
-                {#if iosAnchorAttempted && !downloadError}
-                    <div class="hint-panel">
-                        <p>iPhone Safari may ask you to save through the share sheet.</p>
-                        <button
-                            class="btn-share"
-                            on:click={handleIOSShare}
-                            disabled={iosFetchingShare}
-                        >
-                            <IconShare2 />
-                            {iosFetchingShare ? 'Preparing…' : 'Save / Share File'}
-                        </button>
-                    </div>
-                {/if}
-
-                {#if downloadError}
-                    <div class="hint-panel">
-                        <p>
-                            This source can't be downloaded directly on iPhone Safari.
-                            Open the video, then use Share → Save to Files.
-                        </p>
-                        <a href={url} target="_blank" rel="noopener noreferrer" class="manual-link">
-                            <IconExternalLink />
-                            Open Video
-                        </a>
-                    </div>
-                {/if}
 
             <!-- Desktop, Android, and iOS local-processing file download -->
             {:else}
@@ -458,8 +315,8 @@
         opacity: 0.75;
     }
 
-    /* ── Secondary share button ── */
-    .btn-share {
+    /* ── Secondary copy button (iOS) ── */
+    .btn-copy {
         width: 100%;
         background: var(--button-elevated);
         color: var(--secondary);
@@ -476,10 +333,9 @@
         transition: background 0.12s;
     }
 
-    .btn-share:hover:not(:disabled) { background: var(--button-elevated-hover); }
-    .btn-share:disabled { opacity: 0.6; cursor: wait; }
+    .btn-copy:hover { background: var(--button-elevated-hover); }
 
-    .btn-share :global(svg) {
+    .btn-copy :global(svg) {
         width: 16px;
         height: 16px;
         stroke-width: 2px;
